@@ -1,286 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import Asciidoctor from "@asciidoctor/core";
+import T from "./i18n.js";
 
-const VERSION = "1.0.0";
-
-// ─── i18n ────────────────────────────────────────────────────────────
-const T = {
-  de: {
-    title: "Vibe-Coding Risk Radar",
-    subtitle: "5 Dimensionen · MECE · Höchstes Risiko bestimmt den Tier",
-    low: "niedrig",
-    high: "hoch",
-    active: "aktiv",
-    cumulative: "Kumulativ",
-    cumulativeNote: (ti, tierTitle) =>
-      ti > 0
-        ? `Jeder Tier umfasst alle Maßnahmen der niedrigeren Tiers. Tier ${ti + 1} erfordert alle Maßnahmen von Tier 1${ti > 1 ? `–${ti}` : ""} plus die zusätzlichen Maßnahmen aus „${tierTitle}".`
-        : `Tier 1 erfordert die Maßnahmen aus „${tierTitle}".`,
-    mitigationHeading: "Erforderliche Mitigationsmaßnahmen",
-    measures: "Maßnahmen",
-    measure: "Maßnahme",
-    docsButton: "Dokumentation",
-    closeButton: "Schließen",
-    langSwitch: "EN",
-    typeBadges: {
-      deterministic: "Deterministisch",
-      probabilistic: "Probabilistisch",
-      organizational: "Organisatorisch",
-    },
-    dimensions: [
-      {
-        key: "codeType", label: "Code-Typ", shortLabel: "Code",
-        levels: ["UI / CSS / Doku", "Build-Scripts / Tests", "Business-Logik", "API / DB-Queries", "Auth / Security / Crypto"],
-      },
-      {
-        key: "language", label: "Sprachsicherheit", shortLabel: "Sprache",
-        levels: ["Statisch + Memory-safe (Rust)", "Statisch typisiert (Java, Go, TS)", "Dynamisch typisiert (Python, JS)", "Memory-unsafe managed (C#/unsafe)", "Memory-unsafe (C, C++)"],
-      },
-      {
-        key: "deployment", label: "Deployment-Kontext", shortLabel: "Deploy",
-        levels: ["Persönlich / Prototyp", "Internes Tool", "Public-facing App", "Reguliertes System", "Safety-critical (Avionik etc.)"],
-      },
-      {
-        key: "data", label: "Datensensibilität", shortLabel: "Daten",
-        levels: ["Öffentliche Daten", "Interne Geschäftsdaten", "Allg. PII (Name, E-Mail)", "Sensible PII (SSN, Biometrie)", "PHI / PCI (HIPAA, Kreditkarten)"],
-      },
-      {
-        key: "blastRadius", label: "Blast Radius", shortLabel: "Blast",
-        levels: ["Kosmetisch / Tech Debt", "Performance / DoS", "Datenverlust (wiederherstellbar)", "Systemischer Breach", "Safety (Leib & Leben)"],
-      },
-    ],
-    tiers: [
-      { label: "Tier 1 — Minimal", desc: "Nur automatische Gates" },
-      { label: "Tier 2 — Moderat", desc: "Sampling-Review + Gates" },
-      { label: "Tier 3 — Hoch", desc: "Pflicht-Review + Gates" },
-      { label: "Tier 4 — Kritisch", desc: "AI-Generierung fragwürdig" },
-    ],
-    presets: [
-      { name: "CSS Landing Page", values: { codeType: 0, language: 2, deployment: 0, data: 0, blastRadius: 0 } },
-      { name: "Internes Dashboard", values: { codeType: 2, language: 1, deployment: 1, data: 1, blastRadius: 1 } },
-      { name: "Public REST API", values: { codeType: 3, language: 2, deployment: 2, data: 2, blastRadius: 2 } },
-      { name: "Payment Service", values: { codeType: 4, language: 1, deployment: 2, data: 4, blastRadius: 3 } },
-      { name: "Auth-Modul (Fintech)", values: { codeType: 4, language: 2, deployment: 2, data: 3, blastRadius: 3 } },
-      { name: "Medizingerät-Firmware", values: { codeType: 4, language: 4, deployment: 4, data: 4, blastRadius: 4 } },
-    ],
-    mitigations: [
-      {
-        tier: 1, title: "Automatische Gates (immer aktiv)", icon: "⚙️",
-        measures: [
-          { name: "Linter & Formatter", desc: "ESLint, Prettier, Ruff — schnelles Feedback, null Aufwand", type: "deterministic" },
-          { name: "Type Checking", desc: "TypeScript strict, mypy — ganze Fehlerklassen ausgeschlossen", type: "deterministic" },
-          { name: "Pre-Commit Hooks", desc: "Secrets-Scanning (GitGuardian), Lint, Format vor jedem Commit", type: "deterministic" },
-          { name: "Dependency Check", desc: "npm audit, pip-audit — bekannte CVEs in Dependencies blocken", type: "deterministic" },
-          { name: "CI Build & Unit Tests", desc: "Grüner Build als Merge-Bedingung — fängt Regressionen ab", type: "deterministic" },
-        ],
-      },
-      {
-        tier: 2, title: "Erweiterte Absicherung", icon: "🔍",
-        measures: [
-          { name: "SAST (Semgrep, CodeQL)", desc: "Statische Analyse auf Vulnerability-Patterns — als CI-Gate", type: "deterministic" },
-          { name: "AI Code Review", desc: "CodeRabbit, Copilot Review — unabhängig vom generierenden LLM", type: "probabilistic" },
-          { name: "Property-Based Tests", desc: "Hypothesis, fast-check — 81% Bug-Detection bei Edge Cases", type: "probabilistic" },
-          { name: "SonarQube Quality Gate", desc: "Coverage ≥70%, 0 Critical Vulns, 0 Blocker als Merge-Gate", type: "deterministic" },
-          { name: "Stichproben-Review", desc: "Mensch reviewt ~20% der PRs (rotierend, risiko-gewichtet)", type: "organizational" },
-        ],
-      },
-      {
-        tier: 3, title: "Pflicht-Maßnahmen für hohes Risiko", icon: "🛡️",
-        measures: [
-          { name: "Pflicht Human Review", desc: "Jeder PR mit Auth/PII/Payment wird von Senior Engineer reviewt", type: "organizational" },
-          { name: "Sandbox / Isolation", desc: "Firecracker microVM, Deno Sandbox — Schadensbegrenzung bei Exploit", type: "deterministic" },
-          { name: "Fuzzing", desc: "Fuzz4All, AFL++ — findet Crashes und Vulns durch zufällige Inputs", type: "probabilistic" },
-          { name: "Penetration Testing", desc: "Regelmäßige Security-Audits auf Auth-Flows und API-Endpoints", type: "organizational" },
-          { name: "Canary Deployments", desc: "Schrittweiser Rollout mit automatischem Rollback bei Anomalien", type: "deterministic" },
-          { name: "PromptBOM / Provenance", desc: "Dokumentation: welches Modell, welcher Prompt, wer hat approved", type: "organizational" },
-        ],
-      },
-      {
-        tier: 4, title: "Kritisch — AI-Einsatz stark einschränken", icon: "🚨",
-        measures: [
-          { name: "Formale Verifikation", desc: "Dafny, TLA+, SPARK — mathematischer Beweis der Korrektheit", type: "deterministic" },
-          { name: "Unabhängige Re-Verifikation", desc: "Separates Team verifiziert Output — analog DO-178C DAL A", type: "organizational" },
-          { name: "MC/DC Test Coverage", desc: "Modified Condition/Decision Coverage — Pflicht bei DAL A/B", type: "deterministic" },
-          { name: "Contract-Based Design", desc: "Pre/Postconditions + Invarianten — Spec first, dann Generierung", type: "deterministic" },
-          { name: "Zertifizierungsprozess", desc: "IEC 61508, DO-178C, ISO 26262 Compliance — kein Shortcut möglich", type: "organizational" },
-          { name: "AI nur als Entwurfshilfe", desc: "LLM generiert Vorschlag, Mensch implementiert und verifiziert", type: "organizational" },
-        ],
-      },
-    ],
-    docs: {
-      title: "Dokumentation",
-      sections: [
-        {
-          id: "intro",
-          title: "Warum dieses Framework?",
-          content: `LLM-generierter Code enthält in ca. 45% der Fälle Sicherheitslücken (Veracode, 2025). Gleichzeitig schreiben LLMs bereits über 30% des neuen Codes bei Google und Microsoft. Das Problem: Nicht jeder Code ist gleich riskant. CSS-Styling für eine Landingpage ohne Review zu deployen ist etwas grundlegend anderes als ein Auth-Modul für eine Fintech-App.\n\nDieses Framework bietet eine MECE-Risikokategorisierung (Mutually Exclusive, Collectively Exhaustive), die auf etablierten Safety-Standards (IEC 61508, DO-178C, ISO 26262) aufbaut und sie auf Vibe-Coding anwendet.`,
-        },
-        {
-          id: "dims",
-          title: "Die fünf Dimensionen",
-          content: `Das Gesamtrisiko ergibt sich aus dem Maximum über fünf unabhängige Dimensionen — analog zum \"highest applicable SIL\" aus IEC 61508:\n\n**1. Code-Typ** — Stärkster Prädiktor. Auth/Crypto-Code an der Spitze, da LLMs systematisch MFA, HSTS und Session-Management auslassen. SQL-Injection bleibt häufig, weil LLMs String-Konkatenation statt parametrisierter Queries nutzen.\n\n**2. Sprachsicherheit** — Memory-unsafe Sprachen (C/C++) erzeugen einen Boden-Risiko-Level. Microsoft/Google berichten, dass ~70% ihrer Sicherheitslücken aus Memory-Safety-Problemen stammen.\n\n**3. Deployment-Kontext** — Wo der Code läuft bestimmt, wer betroffen ist. Safety-critical (Avionik, Medizin) erfordert nach DO-178C DAL A MC/DC-Coverage und unabhängige Verifikation.\n\n**4. Datensensibilität** — Regulatorische Exposition: PHI (HIPAA), PCI-Daten, sensible PII. LLM-Code implementiert routinemäßig nicht die erforderlichen Audit-Trails.\n\n**5. Blast Radius** — Reichweite und Reversibilität eines Schadens. Von kosmetischen Bugs bis Leib & Leben.`,
-        },
-        {
-          id: "tiers",
-          title: "Die vier Risiko-Tiers",
-          content: `**Tier 1 — Minimal:** Persönliche Scripts, Prototypen, UI-Styling. Nur automatische Gates nötig. Kein Human Review erforderlich.\n\n**Tier 2 — Moderat:** Interne Tools, unkritische Business-Logik, Test-Code. Stichproben-Review (~20%) plus erweiterte automatische Analyse.\n\n**Tier 3 — Hoch:** Public-facing APIs, Payment-Processing, PII-Handling, Auth-Flows. Pflicht-Review durch Senior Engineers plus Defense-in-Depth.\n\n**Tier 4 — Kritisch:** Flugsteuerung, autonomes Fahren, Medizingeräte, Nuklearsysteme. AI-Generierung fragwürdig; falls eingesetzt, unabhängige Re-Verifikation erforderlich.`,
-        },
-        {
-          id: "failures",
-          title: "LLM-spezifische Fehlerarten",
-          content: `LLM-Code scheitert qualitativ anders als menschlicher Code:\n\n**Plausibel aber subtil falsch** — Kompiliert, besteht oberflächliche Reviews, enthält aber fundamentale Fehler. CodeRabbit fand 1,7× mehr Issues pro PR in AI-Code vs. menschlichem Code.\n\n**Halluzinierte Packages (Slopsquatting)** — ~20% der empfohlenen Packages existieren nicht. Angreifer können diese Namen registrieren. \"huggingface-cli\" wurde 30.000+ mal installiert bevor es entdeckt wurde.\n\n**Automation Complacency** — Entwickler mit AI-Assistenten produzieren mehr Vulnerabilities und glauben gleichzeitig, sichereren Code zu schreiben (Stanford, Perry et al. 2022). Code-Review-Beteiligung sinkt um 30%.`,
-        },
-        {
-          id: "mitigations",
-          title: "Mitigationsstrategie",
-          content: `Da Human Review nicht mit dem Volumen von AI-generiertem Code skaliert, setzt das Framework auf Defense-in-Depth mit drei Maßnahmentypen:\n\n**Deterministisch** (blau) — Garantierte Erkennung innerhalb ihres Scopes. Type Checker, Linter, SAST, Sandboxing. Kein False-Negative-Risiko innerhalb der abgedeckten Patterns.\n\n**Probabilistisch** (lila) — Findet vieles, aber nicht alles. AI Code Review, Property-Based Testing, Fuzzing. Erhöht die Erkennungsrate, bietet aber keine Garantie.\n\n**Organisatorisch** (orange) — Braucht Menschen, skaliert am schlechtesten. Deshalb erst ab Tier 2/3 eingeplant, und dort gezielt auf die riskantesten Änderungen fokussiert.`,
-        },
-        {
-          id: "references",
-          title: "Referenzen & Standards",
-          content: `**Safety Standards:** IEC 61508 (SIL), DO-178C (DAL), ISO 26262 (ASIL), EU AI Act\n\n**Frameworks:** Palo Alto Unit 42 SHIELD, Aikido VCAL, Cloud Security Alliance Secure Vibe Coding Guide, Google SAIF\n\n**Empirische Daten:** Veracode (45% Vulnerability-Rate), CodeRabbit (1,7× mehr Issues), BaxBench (62% fehlerhafte Backends), GitClear (30% weniger Reviews), METR RCT (19% langsamer mit AI)\n\n**Tooling:** Semgrep, CodeQL, SonarQube, GitGuardian, Firecracker, Deno Sandbox, Fuzz4All, Hypothesis`,
-        },
-      ],
-    },
-  },
-  en: {
-    title: "Vibe-Coding Risk Radar",
-    subtitle: "5 Dimensions · MECE · Highest risk determines the tier",
-    low: "low",
-    high: "high",
-    active: "active",
-    cumulative: "Cumulative",
-    cumulativeNote: (ti, tierTitle) =>
-      ti > 0
-        ? `Each tier includes all measures from lower tiers. Tier ${ti + 1} requires all measures from Tier 1${ti > 1 ? `–${ti}` : ""} plus the additional measures from "${tierTitle}".`
-        : `Tier 1 requires the measures from "${tierTitle}".`,
-    mitigationHeading: "Required Mitigation Measures",
-    measures: "measures",
-    measure: "measure",
-    docsButton: "Documentation",
-    closeButton: "Close",
-    langSwitch: "DE",
-    typeBadges: {
-      deterministic: "Deterministic",
-      probabilistic: "Probabilistic",
-      organizational: "Organizational",
-    },
-    dimensions: [
-      {
-        key: "codeType", label: "Code Type", shortLabel: "Code",
-        levels: ["UI / CSS / Docs", "Build scripts / Tests", "Business logic", "API / DB queries", "Auth / Security / Crypto"],
-      },
-      {
-        key: "language", label: "Language Safety", shortLabel: "Lang",
-        levels: ["Static + Memory-safe (Rust)", "Statically typed (Java, Go, TS)", "Dynamically typed (Python, JS)", "Memory-unsafe managed (C#/unsafe)", "Memory-unsafe (C, C++)"],
-      },
-      {
-        key: "deployment", label: "Deployment Context", shortLabel: "Deploy",
-        levels: ["Personal / Prototype", "Internal tool", "Public-facing app", "Regulated system", "Safety-critical (avionics etc.)"],
-      },
-      {
-        key: "data", label: "Data Sensitivity", shortLabel: "Data",
-        levels: ["Public data", "Internal business data", "General PII (name, email)", "Sensitive PII (SSN, biometrics)", "PHI / PCI (HIPAA, credit cards)"],
-      },
-      {
-        key: "blastRadius", label: "Blast Radius", shortLabel: "Blast",
-        levels: ["Cosmetic / Tech debt", "Performance / DoS", "Data loss (recoverable)", "Systemic breach", "Safety (life & limb)"],
-      },
-    ],
-    tiers: [
-      { label: "Tier 1 — Minimal", desc: "Automated gates only" },
-      { label: "Tier 2 — Moderate", desc: "Sampling review + gates" },
-      { label: "Tier 3 — High", desc: "Mandatory review + gates" },
-      { label: "Tier 4 — Critical", desc: "AI generation questionable" },
-    ],
-    presets: [
-      { name: "CSS Landing Page", values: { codeType: 0, language: 2, deployment: 0, data: 0, blastRadius: 0 } },
-      { name: "Internal Dashboard", values: { codeType: 2, language: 1, deployment: 1, data: 1, blastRadius: 1 } },
-      { name: "Public REST API", values: { codeType: 3, language: 2, deployment: 2, data: 2, blastRadius: 2 } },
-      { name: "Payment Service", values: { codeType: 4, language: 1, deployment: 2, data: 4, blastRadius: 3 } },
-      { name: "Auth Module (Fintech)", values: { codeType: 4, language: 2, deployment: 2, data: 3, blastRadius: 3 } },
-      { name: "Medical Device FW", values: { codeType: 4, language: 4, deployment: 4, data: 4, blastRadius: 4 } },
-    ],
-    mitigations: [
-      {
-        tier: 1, title: "Automated Gates (always active)", icon: "⚙️",
-        measures: [
-          { name: "Linter & Formatter", desc: "ESLint, Prettier, Ruff — instant feedback, zero effort", type: "deterministic" },
-          { name: "Type Checking", desc: "TypeScript strict, mypy — entire error classes eliminated", type: "deterministic" },
-          { name: "Pre-Commit Hooks", desc: "Secrets scanning (GitGuardian), lint, format before every commit", type: "deterministic" },
-          { name: "Dependency Check", desc: "npm audit, pip-audit — block known CVEs in dependencies", type: "deterministic" },
-          { name: "CI Build & Unit Tests", desc: "Green build as merge requirement — catches regressions", type: "deterministic" },
-        ],
-      },
-      {
-        tier: 2, title: "Extended Assurance", icon: "🔍",
-        measures: [
-          { name: "SAST (Semgrep, CodeQL)", desc: "Static analysis for vulnerability patterns — as CI gate", type: "deterministic" },
-          { name: "AI Code Review", desc: "CodeRabbit, Copilot Review — independent from generating LLM", type: "probabilistic" },
-          { name: "Property-Based Tests", desc: "Hypothesis, fast-check — 81% bug detection on edge cases", type: "probabilistic" },
-          { name: "SonarQube Quality Gate", desc: "Coverage ≥70%, 0 critical vulns, 0 blockers as merge gate", type: "deterministic" },
-          { name: "Sampling Review", desc: "Human reviews ~20% of PRs (rotating, risk-weighted)", type: "organizational" },
-        ],
-      },
-      {
-        tier: 3, title: "Mandatory Measures for High Risk", icon: "🛡️",
-        measures: [
-          { name: "Mandatory Human Review", desc: "Every PR touching auth/PII/payment reviewed by senior engineer", type: "organizational" },
-          { name: "Sandbox / Isolation", desc: "Firecracker microVM, Deno Sandbox — containment on exploit", type: "deterministic" },
-          { name: "Fuzzing", desc: "Fuzz4All, AFL++ — finds crashes and vulns via random inputs", type: "probabilistic" },
-          { name: "Penetration Testing", desc: "Regular security audits on auth flows and API endpoints", type: "organizational" },
-          { name: "Canary Deployments", desc: "Gradual rollout with automatic rollback on anomalies", type: "deterministic" },
-          { name: "PromptBOM / Provenance", desc: "Document: which model, which prompt, who approved", type: "organizational" },
-        ],
-      },
-      {
-        tier: 4, title: "Critical — Severely Restrict AI Use", icon: "🚨",
-        measures: [
-          { name: "Formal Verification", desc: "Dafny, TLA+, SPARK — mathematical proof of correctness", type: "deterministic" },
-          { name: "Independent Re-Verification", desc: "Separate team verifies output — per DO-178C DAL A", type: "organizational" },
-          { name: "MC/DC Test Coverage", desc: "Modified Condition/Decision Coverage — required at DAL A/B", type: "deterministic" },
-          { name: "Contract-Based Design", desc: "Pre/postconditions + invariants — spec first, then generation", type: "deterministic" },
-          { name: "Certification Process", desc: "IEC 61508, DO-178C, ISO 26262 compliance — no shortcut", type: "organizational" },
-          { name: "AI as Draft Aid Only", desc: "LLM generates proposal, human implements and verifies", type: "organizational" },
-        ],
-      },
-    ],
-    docs: {
-      title: "Documentation",
-      sections: [
-        {
-          id: "intro",
-          title: "Why This Framework?",
-          content: `LLM-generated code contains security vulnerabilities roughly 45% of the time (Veracode, 2025). At the same time, LLMs already write over 30% of new code at Google and Microsoft. The problem: not all code carries equal risk. Deploying CSS styling for a landing page without review is fundamentally different from doing the same with an auth module for a fintech app.\n\nThis framework provides a MECE risk categorization (Mutually Exclusive, Collectively Exhaustive) built on established safety standards (IEC 61508, DO-178C, ISO 26262) and applies them to vibe coding.`,
-        },
-        {
-          id: "dims",
-          title: "The Five Dimensions",
-          content: `Overall risk is determined by the maximum across five independent dimensions — analogous to the "highest applicable SIL" from IEC 61508:\n\n**1. Code Type** — Strongest predictor. Auth/crypto code at the top, as LLMs systematically omit MFA, HSTS, and session management. SQL injection remains common because LLMs default to string concatenation over parameterized queries.\n\n**2. Language Safety** — Memory-unsafe languages (C/C++) create a floor risk level. Microsoft/Google report ~70% of security vulnerabilities stem from memory safety issues.\n\n**3. Deployment Context** — Where code runs determines who is affected. Safety-critical systems (avionics, medical) require MC/DC coverage and independent verification per DO-178C DAL A.\n\n**4. Data Sensitivity** — Regulatory exposure: PHI (HIPAA), PCI data, sensitive PII. LLM code routinely fails to implement required audit trails.\n\n**5. Blast Radius** — Scope and reversibility of potential damage. From cosmetic bugs to loss of life.`,
-        },
-        {
-          id: "tiers",
-          title: "The Four Risk Tiers",
-          content: `**Tier 1 — Minimal:** Personal scripts, prototypes, UI styling. Only automated gates needed. No human review required.\n\n**Tier 2 — Moderate:** Internal tools, non-critical business logic, test code. Sampling review (~20%) plus extended automated analysis.\n\n**Tier 3 — High:** Public-facing APIs, payment processing, PII handling, auth flows. Mandatory review by senior engineers plus defense-in-depth.\n\n**Tier 4 — Critical:** Flight control, autonomous driving, medical devices, nuclear systems. AI generation questionable; if used, independent re-verification required.`,
-        },
-        {
-          id: "failures",
-          title: "LLM-Specific Failure Modes",
-          content: `LLM code fails in qualitatively different ways than human-written code:\n\n**Plausible but subtly wrong** — Compiles, passes superficial review, but contains fundamental flaws. CodeRabbit found 1.7× more issues per PR in AI code vs. human code.\n\n**Hallucinated packages (Slopsquatting)** — ~20% of recommended packages don't exist. Attackers can register these names. "huggingface-cli" was installed 30,000+ times before detection.\n\n**Automation Complacency** — Developers using AI assistants produce more vulnerabilities while simultaneously believing they write more secure code (Stanford, Perry et al. 2022). Code review participation drops by 30%.`,
-        },
-        {
-          id: "mitigations",
-          title: "Mitigation Strategy",
-          content: `Since human review cannot scale with AI code generation volume, the framework relies on defense-in-depth with three measure types:\n\n**Deterministic** (blue) — Guaranteed detection within scope. Type checkers, linters, SAST, sandboxing. No false-negative risk within covered patterns.\n\n**Probabilistic** (purple) — Finds many issues but not all. AI code review, property-based testing, fuzzing. Increases detection rate but offers no guarantee.\n\n**Organizational** (orange) — Requires humans, scales worst. Therefore only introduced from Tier 2/3 onward, focused on the riskiest changes.`,
-        },
-        {
-          id: "references",
-          title: "References & Standards",
-          content: `**Safety Standards:** IEC 61508 (SIL), DO-178C (DAL), ISO 26262 (ASIL), EU AI Act\n\n**Frameworks:** Palo Alto Unit 42 SHIELD, Aikido VCAL, Cloud Security Alliance Secure Vibe Coding Guide, Google SAIF\n\n**Empirical Data:** Veracode (45% vulnerability rate), CodeRabbit (1.7× more issues), BaxBench (62% faulty backends), GitClear (30% fewer reviews), METR RCT (19% slower with AI)\n\n**Tooling:** Semgrep, CodeQL, SonarQube, GitGuardian, Firecracker, Deno Sandbox, Fuzz4All, Hypothesis`,
-        },
-      ],
-    },
-  },
-};
+const VERSION = "1.1.0";
 
 const TIER_BG = ["#10b981", "#f59e0b", "#f97316", "#ef4444"];
 const TYPE_COLORS = {
@@ -368,9 +90,27 @@ function MitigationCard({ group, active, accent, t }) {
   );
 }
 
+const adoc = Asciidoctor();
+
+const ADOC_SIDEBAR_STYLES = `
+  .adoc-content p { margin: 0.5em 0; }
+  .adoc-content a { color: #38bdf8; text-decoration: underline; text-decoration-color: #38bdf844; }
+  .adoc-content a:hover { text-decoration-color: #38bdf8; }
+  .adoc-content strong { color: #e2e8f0; }
+  .adoc-content code { background: #1e293b; padding: 1px 4px; border-radius: 3px; font-size: 0.92em; }
+`;
+
 function DocSidebar({ docs, open, onClose }) {
   const ref = useRef(null);
   useEffect(() => { if (open && ref.current) ref.current.scrollTop = 0; }, [open]);
+
+  const rendered = useMemo(() =>
+    docs.sections.map((sec) => ({
+      ...sec,
+      html: adoc.convert(sec.content, { safe: "safe", attributes: { showtitle: false } }),
+    })),
+    [docs.sections]
+  );
 
   return (
     <div
@@ -387,20 +127,19 @@ function DocSidebar({ docs, open, onClose }) {
     >
       {open && (
         <div style={{ padding: "24px 20px" }}>
+          <style>{ADOC_SIDEBAR_STYLES}</style>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
             <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#f8fafc" }}>📖 {docs.title}</h2>
             <button onClick={onClose} style={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 6, color: "#94a3b8", padding: "4px 10px", cursor: "pointer", fontSize: 12 }}>✕</button>
           </div>
-          {docs.sections.map((sec) => (
+          {rendered.map((sec) => (
             <div key={sec.id} style={{ marginBottom: 28 }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: "#e2e8f0", margin: "0 0 10px", paddingBottom: 6, borderBottom: "1px solid #1e293b" }}>{sec.title}</h3>
-              <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
-                {sec.content.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
-                  part.startsWith("**") && part.endsWith("**")
-                    ? <strong key={i} style={{ color: "#e2e8f0" }}>{part.slice(2, -2)}</strong>
-                    : <span key={i}>{part}</span>
-                )}
-              </div>
+              <div
+                className="adoc-content"
+                style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.7 }}
+                dangerouslySetInnerHTML={{ __html: sec.html }}
+              />
             </div>
           ))}
           <div style={{ borderTop: "1px solid #1e293b", paddingTop: 16, marginTop: 8, fontSize: 11, color: "#475569", textAlign: "center" }}>

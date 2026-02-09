@@ -1,6 +1,6 @@
 {
   "name": "vibe-coding-risk-radar",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "MECE risk framework for AI-generated code — interactive React component with AsciiDoc documentation",
   "type": "module",
   "scripts": {
@@ -10,6 +10,7 @@
     "docs": "asciidoctor -a icons=font -a source-highlighter=highlight.js -a linkcss -a stylesheet=asciidoctor.css -D dist/docs docs/risk-radar.adoc"
   },
   "dependencies": {
+    "@asciidoctor/core": "^3.0.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

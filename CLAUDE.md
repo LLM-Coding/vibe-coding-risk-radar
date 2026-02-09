@@ -20,11 +20,12 @@ This is a single-page React app (React 18, Vite 6) that visualizes a MECE risk f
 
 ### Core Structure
 
-- **`src/RiskRadar.jsx`** — The entire application lives in this single self-contained component (~517 lines). It includes:
-  - **i18n**: A `T` object at the top with full DE/EN translations, dimension definitions, preset scenarios, mitigation measures, and documentation content. All text is inline, no external i18n library.
+- **`src/RiskRadar.jsx`** — All React components (~258 lines):
   - **Risk model**: 5 dimensions (codeType, language, deployment, data, blastRadius), each scored 0–4. The tier is determined by `Math.max()` across all dimensions, mapped to 4 tiers.
-  - **Components** (not exported, all in the same file): `RadarChart` (SVG polygon radar), `MitigationCard` (expandable tier cards), `DocSidebar` (slide-out documentation panel), and the default export `RiskRadar`.
+  - **Components** (not exported, all in the same file): `RadarChart` (SVG polygon radar), `MitigationCard` (expandable tier cards), `DocSidebar` (slide-out documentation panel using asciidoctor.js), and the default export `RiskRadar`.
   - **Styling**: All inline styles, no CSS modules or styled-components. Dark theme with slate color palette. Colors defined via `TIER_BG` and `TYPE_COLORS` constants.
+
+- **`src/i18n.js`** — Full DE/EN translations (~353 lines): dimension definitions, preset scenarios, mitigation measures, and documentation content with AsciiDoc markup and hyperlinked references.
 
 - **`docs/risk-radar.adoc`** — Standalone AsciiDoc documentation with 30+ references. Rendered separately by Asciidoctor (not by the React app).
 
