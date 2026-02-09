@@ -103,6 +103,14 @@ const ADOC_SIDEBAR_STYLES = `
 function DocSidebar({ docs, open, onClose }) {
   const ref = useRef(null);
   useEffect(() => { if (open && ref.current) ref.current.scrollTop = 0; }, [open]);
+  useEffect(() => {
+    if (open && ref.current) {
+      ref.current.querySelectorAll(".adoc-content a").forEach((a) => {
+        a.setAttribute("target", "_blank");
+        a.setAttribute("rel", "noopener");
+      });
+    }
+  });
 
   const rendered = useMemo(() =>
     docs.sections.map((sec) => ({
@@ -133,8 +141,13 @@ function DocSidebar({ docs, open, onClose }) {
             <button onClick={onClose} style={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 6, color: "#94a3b8", padding: "4px 10px", cursor: "pointer", fontSize: 12 }}>✕</button>
           </div>
           {rendered.map((sec) => (
-            <div key={sec.id} style={{ marginBottom: 28 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: "#e2e8f0", margin: "0 0 10px", paddingBottom: 6, borderBottom: "1px solid #1e293b" }}>{sec.title}</h3>
+            <div key={sec.id} style={{
+              marginBottom: 28,
+              ...(sec.id === "disclaimer" ? { background: "#1e293b", borderRadius: 10, padding: "14px 16px", border: "1px solid #334155" } : {}),
+            }}>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: sec.id === "disclaimer" ? "#f59e0b" : "#e2e8f0", margin: "0 0 10px", paddingBottom: 6, borderBottom: sec.id === "disclaimer" ? "none" : "1px solid #1e293b" }}>
+                {sec.id === "disclaimer" ? "\u26A0\uFE0F " : ""}{sec.title}
+              </h3>
               <div
                 className="adoc-content"
                 style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.7 }}
@@ -249,7 +262,10 @@ export default function RiskRadar() {
           </div>
         </div>
 
-        <div style={{ marginTop: 24, fontSize: 10, color: "#334155", textAlign: "center" }}>v{VERSION}</div>
+        <div style={{ marginTop: 24, fontSize: 10, color: "#475569", textAlign: "center", lineHeight: 1.8 }}>
+          <div>v{VERSION} · <a href="https://github.com/LLM-Coding/vibe-coding-risk-radar" target="_blank" rel="noopener" style={{ color: "#64748b" }}>{t.footer.github}</a> · <a href={`docs/risk-radar${lang === "en" ? "-en" : ""}.html`} target="_blank" rel="noopener" style={{ color: "#64748b" }}>{t.footer.fullDocs}</a></div>
+          <div>{t.footer.madeBy} <a href="https://www.linkedin.com/in/rdmueller" target="_blank" rel="noopener" style={{ color: "#64748b" }}>Ralf D. Müller</a></div>
+        </div>
       </div>
 
       <DocSidebar docs={t.docs} open={docsOpen} onClose={() => setDocsOpen(false)} />

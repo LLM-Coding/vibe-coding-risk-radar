@@ -102,15 +102,29 @@ const T = {
         ],
       },
     ],
+    footer: {
+      github: "GitHub",
+      fullDocs: "Ausführliche Dokumentation",
+      madeBy: "Erstellt von",
+    },
     docs: {
       title: "Dokumentation",
       sections: [
+        {
+          id: "disclaimer",
+          title: "Hinweis",
+          content: `Dieses Tool bietet eine *allgemeine Orientierungshilfe* zur Risikoeinschätzung von AI-generiertem Code. Die vorgeschlagenen Tier-Einstufungen und Maßnahmen ersetzen keine individuelle Sicherheitsbewertung und sind nicht für jeden Kontext gleichermaßen geeignet.
+
+Jede Organisation sollte die Dimensionen, Schwellwerte und Maßnahmen an ihre eigenen Anforderungen, regulatorischen Rahmenbedingungen und Risikobereitschaft anpassen. Der gesamte Quellcode ist https://github.com/LLM-Coding/vibe-coding-risk-radar[Open Source (MIT)] — Anpassungen sind ausdrücklich erwünscht.
+
+Feedback, Verbesserungsvorschläge und Fehlerberichte bitte als https://github.com/LLM-Coding/vibe-coding-risk-radar/issues[GitHub Issue] oder direkt an https://www.linkedin.com/in/rdmueller[Ralf D. Müller].`,
+        },
         {
           id: "intro",
           title: "Warum dieses Framework?",
           content: `LLM-generierter Code enthält in ca. 45% der Fälle Sicherheitslücken (https://www.veracode.com/blog/ai-generated-code-security-risks/[Veracode, 2025]). Gleichzeitig schreiben LLMs bereits über 30% des neuen Codes bei Google und Microsoft. Das Problem: Nicht jeder Code ist gleich riskant. CSS-Styling für eine Landingpage ohne Review zu deployen ist etwas grundlegend anderes als ein Auth-Modul für eine Fintech-App.
 
-Dieses Framework bietet eine MECE-Risikokategorisierung (Mutually Exclusive, Collectively Exhaustive), die auf etablierten Safety-Standards (https://www.perforce.com/blog/qac/what-iec-61508-safety-integrity-levels-sils[IEC 61508], https://en.wikipedia.org/wiki/DO-178C[DO-178C], https://en.wikipedia.org/wiki/ISO_26262[ISO 26262]) aufbaut und sie auf Vibe-Coding anwendet.`,
+Dieses Framework bietet eine https://github.com/LLM-Coding/Semantic-Anchors?tab=readme-ov-file#262-mece-principle[MECE]-Risikokategorisierung (Mutually Exclusive, Collectively Exhaustive), die auf etablierten Safety-Standards (https://www.perforce.com/blog/qac/what-iec-61508-safety-integrity-levels-sils[IEC 61508], https://en.wikipedia.org/wiki/DO-178C[DO-178C], https://en.wikipedia.org/wiki/ISO_26262[ISO 26262]) aufbaut und sie auf Vibe-Coding anwendet.`,
         },
         {
           id: "dims",
@@ -276,15 +290,29 @@ Dieses Framework bietet eine MECE-Risikokategorisierung (Mutually Exclusive, Col
         ],
       },
     ],
+    footer: {
+      github: "GitHub",
+      fullDocs: "Full Documentation",
+      madeBy: "Created by",
+    },
     docs: {
       title: "Documentation",
       sections: [
+        {
+          id: "disclaimer",
+          title: "Disclaimer",
+          content: `This tool provides *general guidance* for assessing the risk of AI-generated code. The suggested tier classifications and measures do not replace an individual security assessment and may not be equally suitable for every context.
+
+Each organization should adapt the dimensions, thresholds, and measures to their own requirements, regulatory frameworks, and risk appetite. The entire source code is https://github.com/LLM-Coding/vibe-coding-risk-radar[open source (MIT)] — customization is explicitly encouraged.
+
+Feedback, suggestions, and bug reports welcome as https://github.com/LLM-Coding/vibe-coding-risk-radar/issues[GitHub issues] or directly to https://www.linkedin.com/in/rdmueller[Ralf D. Müller].`,
+        },
         {
           id: "intro",
           title: "Why This Framework?",
           content: `LLM-generated code contains security vulnerabilities roughly 45% of the time (https://www.veracode.com/blog/ai-generated-code-security-risks/[Veracode, 2025]). At the same time, LLMs already write over 30% of new code at Google and Microsoft. The problem: not all code carries equal risk. Deploying CSS styling for a landing page without review is fundamentally different from doing the same with an auth module for a fintech app.
 
-This framework provides a MECE risk categorization (Mutually Exclusive, Collectively Exhaustive) built on established safety standards (https://www.perforce.com/blog/qac/what-iec-61508-safety-integrity-levels-sils[IEC 61508], https://en.wikipedia.org/wiki/DO-178C[DO-178C], https://en.wikipedia.org/wiki/ISO_26262[ISO 26262]) and applies them to vibe coding.`,
+This framework provides a https://github.com/LLM-Coding/Semantic-Anchors?tab=readme-ov-file#262-mece-principle[MECE] risk categorization (Mutually Exclusive, Collectively Exhaustive) built on established safety standards (https://www.perforce.com/blog/qac/what-iec-61508-safety-integrity-levels-sils[IEC 61508], https://en.wikipedia.org/wiki/DO-178C[DO-178C], https://en.wikipedia.org/wiki/ISO_26262[ISO 26262]) and applies them to vibe coding.`,
         },
         {
           id: "dims",
