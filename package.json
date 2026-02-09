@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "docs": "asciidoctor -a icons=font -a source-highlighter=highlight.js -a linkcss -a stylesheet=asciidoctor.css -D dist/docs docs/risk-radar.adoc"
+    "docs": "asciidoctor -a icons=font -a source-highlighter=highlight.js -a linkcss -a stylesheet=asciidoctor.css -D dist/docs docs/risk-radar.adoc docs/risk-radar-en.adoc"
   },
   "dependencies": {
     "@asciidoctor/core": "^3.0.4",
