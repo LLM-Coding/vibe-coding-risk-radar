@@ -1,0 +1,17 @@
+node_modules/
+dist/
+*.local
+.env
+.env.*
+!.env.example
+
+# OS files
+*:Zone.Identifier
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo

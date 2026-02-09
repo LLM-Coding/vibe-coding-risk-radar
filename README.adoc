@@ -1,0 +1,96 @@
+= Vibe-Coding Risk Radar
+:toc: macro
+:toclevels: 2
+:icons: font
+
+MECE risk framework for AI-generated code — 5 dimensions, 4 tiers, actionable mitigations.
+
+toc::[]
+
+== What is this?
+
+An interactive React component that classifies vibe-coding risk across 5 orthogonal dimensions and maps results to concrete mitigation tiers.
+Accompanied by full AsciiDoc documentation with 30+ verified references.
+
+=== Features
+
+* *5 MECE Dimensions:* Code type, language safety, deployment context, data sensitivity, blast radius
+* *4 Cumulative Tiers:* Each tier includes all mitigations of lower tiers
+* *Radar Chart:* SVG visualization of the risk profile
+* *Presets:* Quick scenarios (Landing Page → Payment Service)
+* *DE / EN:* Full bilingual support, switchable at runtime
+* *Inline Documentation:* Slide-out sidebar with all 6 doc sections
+* *Mobile-friendly:* Responsive layout with stacked sliders
+
+== Quick Start
+
+=== Local Development
+
+[source,bash]
+----
+npm install
+npm run dev
+----
+
+Opens at `http://localhost:5173`.
+
+=== Production Build
+
+[source,bash]
+----
+npm run build
+npm run preview
+----
+
+Output in `dist/`.
+
+== GitHub Pages Deployment
+
+The included GitHub Action (`.github/workflows/deploy.yml`) handles everything automatically:
+
+. Builds the React app with Vite
+. Renders the AsciiDoc documentation with Asciidoctor
+. Deploys both to GitHub Pages
+
+=== Setup
+
+. Go to *Settings → Pages* in your GitHub repository
+. Under *Build and deployment*, select *GitHub Actions* as the source
+. Push to `main` — the workflow runs automatically
+
+After deployment:
+
+* *App:* `https://<user>.github.io/<repo>/`
+* *Docs:* `https://<user>.github.io/<repo>/docs/risk-radar.html`
+
+== Project Structure
+
+[source]
+----
+.
+├── .github/workflows/deploy.yml   # GitHub Pages CI/CD
+├── docs/
+│   └── risk-radar.adoc            # Full AsciiDoc documentation (30+ refs)
+├── src/
+│   ├── RiskRadar.jsx              # Main React component (self-contained)
+│   ├── main.jsx                   # React entry point
+│   └── index.css                  # Minimal reset
+├── index.html                     # Vite entry HTML
+├── package.json
+├── vite.config.js
+└── README.adoc
+----
+
+== Documentation
+
+The `docs/risk-radar.adoc` file contains the full framework documentation:
+
+* Empirical evidence (Veracode, CodeRabbit, METR, Perry et al.)
+* 5×5 dimension matrix with detailed descriptions
+* 4-tier mitigation model with deterministic, probabilistic, and organizational measures
+* Regulatory context (EU AI Act, HIPAA, PCI-DSS, IEC 61508, DO-178C, ISO 26262)
+* References: 30+ verified URLs to primary sources
+
+== License
+
+MIT

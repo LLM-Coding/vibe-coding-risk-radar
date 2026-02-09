@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Detect base path
+        id: base
+        run: |
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+          echo "path=/${REPO_NAME}/" >> "$GITHUB_OUTPUT"
+
+      - name: Build React app
+        run: npm run build
+        env:
+          VITE_BASE_PATH: ${{ steps.base.outputs.path }}
+
+      - name: Install Asciidoctor
+        run: sudo gem install asciidoctor --no-document
+
+      - name: Render AsciiDoc documentation
+        run: |
+          mkdir -p dist/docs
+          asciidoctor \
+            -a icons=font \
+            -a source-highlighter=highlight.js \
+            -a linkcss! \
+            -a toc=left \
+            -a toclevels=3 \
+            -a sectanchors \
+            -a sectlinks \
+            -D dist/docs \
+            docs/risk-radar.adoc
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

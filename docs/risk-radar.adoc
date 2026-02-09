@@ -1,0 +1,478 @@
+= Vibe-Coding Risk Radar
+:author: Claude Opus 4.6
+:revdate: 2026-02-09
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+:sectanchors:
+:sectlinks:
+:lang: de
+
+== Warum dieses Framework?
+
+LLM-generierter Code enthält in ca. 45% der Fälle Sicherheitslücken (https://www.veracode.com/blog/ai-generated-code-security-risks/[Veracode, 2025]).
+Gleichzeitig schreiben LLMs bereits über 30% des neuen Codes bei Google und Microsoft (https://news.outsourceaccelerator.com/?p=75972[Outsource Accelerator]).
+Y Combinators Winter-2025-Kohorte enthielt Startups mit 95% AI-geschriebenen Codebases.
+
+Das Problem: *Nicht jeder Code ist gleich riskant.*
+CSS-Styling für eine Landingpage ohne Review zu deployen ist etwas grundlegend anderes als ein Auth-Modul für eine Fintech-App.
+Trotzdem werden beide oft gleich behandelt — entweder alles reviewen (unrealistisch bei dem Volumen) oder nichts reviewen (fahrlässig bei kritischem Code).
+
+Dieses Framework bietet eine *MECE-Risikokategorisierung* (Mutually Exclusive, Collectively Exhaustive), die auf etablierten Safety-Standards (https://www.perforce.com/blog/qac/what-iec-61508-safety-integrity-levels-sils[IEC 61508], https://en.wikipedia.org/wiki/DO-178C[DO-178C], https://en.wikipedia.org/wiki/ISO_26262[ISO 26262]) aufbaut und sie auf Vibe-Coding anwendet.
+
+=== Kernthese
+
+[quote]
+Human Review skaliert nicht mit dem Volumen von AI-generiertem Code.
+Die Lösung ist nicht „alles reviewen" oder „nichts reviewen", sondern *risikobasierte Differenzierung* mit automatisierten Mitigationsmaßnahmen als tragende Säule.
+
+=== Verwendete Standards und Frameworks
+
+[cols="1,2", options="header"]
+|===
+| Standard / Framework | Relevanz
+
+| IEC 61508 (SIL)
+| Safety Integrity Levels — Basis für die „Highest applicable SIL"-Logik
+
+| DO-178C (DAL)
+| Design Assurance Levels für Avionik-Software — Tier-4-Referenz
+
+| ISO 26262 (ASIL)
+| Automotive Safety Integrity Levels
+
+| EU AI Act
+| Risikobasierter Ansatz für AI-Systeme — 4-Stufen-Modell
+
+| Palo Alto Unit 42 SHIELD
+| 6 Controls für Vibe-Coding-Sicherheit (Jan 2026)
+
+| Aikido VCAL
+| Vibe-Coding Assurance Levels 0–5
+
+| Cloud Security Alliance
+| Secure Vibe Coding Guide (Apr 2025)
+
+| Google SAIF
+| Secure AI Framework — „Prompts are Code"
+|===
+
+
+== Die fünf Risiko-Dimensionen
+
+Das Gesamtrisiko ergibt sich aus dem *Maximum* über fünf unabhängige Dimensionen — analog zum „highest applicable SIL" aus https://www.perforce.com/blog/qac/what-iec-61508-safety-integrity-levels-sils[IEC 61508].
+Eine einzige kritische Dimension reicht, um den Gesamt-Tier hochzuziehen.
+
+=== Dimension 1: Code-Typ
+
+Stärkster Prädiktor für das Risiko.
+
+[cols="1,1,2", options="header"]
+|===
+| Stufe | Beispiele | Risikobegründung
+
+| 0 — Minimal
+| UI, CSS, Dokumentation
+| Rein visuell, keine Logik, keine Datenverarbeitung
+
+| 1 — Niedrig
+| Build-Scripts, Test-Code
+| Indirekte Auswirkung, läuft nicht in Produktion
+
+| 2 — Moderat
+| Business-Logik
+| Korrektheitsfehler möglich (z.B. Rundungsregeln), aber begrenzte Angriffsfläche
+
+| 3 — Hoch
+| API-Endpoints, DB-Queries
+| https://baxbench.com/[BaxBench]: 62% der LLM-generierten Backends fehlerhaft oder unsicher. SQL-Injection häufig.
+
+| 4 — Kritisch
+| Auth, Session-Mgmt, Crypto, Key-Mgmt
+| LLMs lassen systematisch MFA, HSTS, Session-Management aus. https://unit42.paloaltonetworks.com/securing-vibe-coding-tools/[Unit 42 SHIELD]: „Never accept AI output alone."
+|===
+
+=== Dimension 2: Sprachsicherheit
+
+Die Programmiersprache erzeugt einen Boden-Risiko-Level für bestimmte Vulnerability-Klassen.
+
+[cols="1,1,2", options="header"]
+|===
+| Stufe | Sprachen | Begründung
+
+| 0 — Minimal
+| Rust
+| Statisch typisiert + Memory-safe. Compiler fängt ganze Fehlerklassen ab.
+
+| 1 — Niedrig
+| Java, Go, C#, TypeScript
+| Statisch typisiert, Garbage Collected. Type Checker als automatisches Sicherheitsnetz.
+
+| 2 — Moderat
+| Python, JavaScript, Ruby
+| Dynamisch typisiert — Type Errors erst zur Laufzeit. Anfällig für Injection, SSRF.
+
+| 3 — Hoch
+| C# mit unsafe-Blöcken
+| Überwiegend sicher, aber unsafe-Regionen umgehen die Garantien.
+
+| 4 — Kritisch
+| C, C++
+| Microsoft/Google: https://www.chromium.org/Home/chromium-security/memory-safety/[~70% der Sicherheitslücken aus Memory-Safety-Problemen]. LLM-generiertes C/C++: 46,67% Heap-Buffer-Overflows in Benchmarks.
+|===
+
+NOTE: Das https://www.whitehouse.gov/wp-content/uploads/2024/02/Final-ONCD-Technical-Report.pdf[Weiße Haus empfahl 2024] die Umstellung auf memory-safe Sprachen. DARPAs https://www.darpa.mil/research/programs/translating-all-c-to-rust[TRACTOR-Programm] übersetzt C nach Rust.
+
+=== Dimension 3: Deployment-Kontext
+
+Wo der Code läuft, bestimmt, wer von Fehlern betroffen ist.
+
+[cols="1,1,2", options="header"]
+|===
+| Stufe | Kontext | Begründung
+
+| 0 — Minimal
+| Persönlich / Prototyp
+| Ursprünglicher Kontext für Vibe-Coding (https://x.com/karpathy/status/1886192184808149383[Karpathy]). Kein externer Zugriff.
+
+| 1 — Niedrig
+| Internes Tool
+| Begrenzte Angriffsfläche, aber oft mit Produktions-DB verbunden.
+
+| 2 — Moderat
+| Public-facing App
+| Direkt angreifbar. https://www.desplega.ai/blog/vibe-break-chapter-iv-the-lovable-inadvertence[Lovable CVE-2025-48757]: 10,3% der vibe-codierten Apps mit kritischen Lücken.
+
+| 3 — Hoch
+| Reguliertes System
+| Compliance-Anforderungen (HIPAA, PCI DSS, SOX). Verstöße haben rechtliche Konsequenzen.
+
+| 4 — Kritisch
+| Safety-critical (Avionik, Medizin, Nuklear)
+| Fehler = potentieller Personenschaden. https://en.wikipedia.org/wiki/DO-178C[DO-178C] DAL A erfordert MC/DC Coverage + unabhängige Verifikation.
+|===
+
+=== Dimension 4: Datensensibilität
+
+Regulatorische Exposition und Breach-Impact.
+
+[cols="1,1,2", options="header"]
+|===
+| Stufe | Datentyp | Regulierung / Impact
+
+| 0 — Minimal
+| Öffentliche Daten
+| Kein regulatorisches Risiko
+
+| 1 — Niedrig
+| Interne Geschäftsdaten
+| Vertraulich, aber kein personenbezogener Schaden
+
+| 2 — Moderat
+| Allg. PII (Name, E-Mail)
+| DSGVO Art. 5, Meldepflicht bei Breach
+
+| 3 — Hoch
+| Sensible PII (SSN, Biometrie, Finanzdaten)
+| Identitätsdiebstahl möglich, erhöhte Strafen
+
+| 4 — Kritisch
+| PHI / PCI (HIPAA, Kreditkarten)
+| HIPAA: bis $1,5M pro Verstoßkategorie. PCI DSS: Audit-Trail-Pflicht. https://www.kaspersky.com/blog/vibe-coding-2025-risks/54584/[LLM-Code implementiert beides routinemäßig nicht].
+|===
+
+=== Dimension 5: Blast Radius
+
+Reichweite und Reversibilität eines Schadens.
+
+[cols="1,1,2", options="header"]
+|===
+| Stufe | Schadensart | Reversibilität
+
+| 0 — Minimal
+| Kosmetisch / Tech Debt
+| Sofort behebbar, kein Business-Impact
+
+| 1 — Niedrig
+| Performance / DoS
+| Signifikant aber eingrenzbar
+
+| 2 — Moderat
+| Datenverlust (wiederherstellbar)
+| Teilweise wiederherstellbar, aber Aufwand und Vertrauensverlust
+
+| 3 — Hoch
+| Systemischer Breach
+| https://escape.tech/blog/methodology-how-we-discovered-vulnerabilities-apps-built-with-vibe-coding/[Escape.tech]: 2000+ Vulnerabilities, 400+ exponierte Secrets, 175× PII-Exposure in 5600 vibe-codierten Apps
+
+| 4 — Kritisch
+| Safety (Leib & Leben)
+| Katastrophal, irreversibel
+|===
+
+
+== Die vier Risiko-Tiers
+
+[cols="1,2,2,2", options="header"]
+|===
+| Tier | Analoge Standards | Review-Anforderung | Beispiel-Szenarien
+
+| **1 — Minimal**
+| DAL E, ASIL QM, EU AI Act „minimal"
+| Nur automatische Gates
+| Persönliche Scripts, Prototypen, UI-Styling, Doku-Generierung
+
+| **2 — Moderat**
+| SIL 1–2, DAL D–C, ASIL A–B
+| Stichproben-Review + automatische Gates
+| Interne Tools, unkritische Business-Logik, Test-Code, Build-Scripts
+
+| **3 — Hoch**
+| SIL 2–3, DAL B, ASIL C, EU AI Act „high"
+| Pflicht Human Review + automatische Gates
+| Public-facing APIs, Payment-Processing, PII-Handling, Auth-Flows
+
+| **4 — Kritisch**
+| SIL 3–4, DAL A, ASIL D
+| AI-Generierung fragwürdig; falls genutzt: unabhängige Re-Verifikation
+| Flugsteuerung, autonomes Fahren, Medizingeräte, Nuklearsysteme
+|===
+
+=== Tier-Bestimmung: Maximum-Prinzip
+
+Der Gesamt-Tier ergibt sich aus dem *höchsten Einzelwert* über alle fünf Dimensionen.
+
+.Beispiel: Payment Service
+[example]
+====
+* Code-Typ: Auth/Crypto → Stufe 4
+* Sprache: TypeScript → Stufe 1
+* Deployment: Public-facing → Stufe 2
+* Daten: PCI → Stufe 4
+* Blast Radius: Systemischer Breach → Stufe 3
+
+*Ergebnis: Tier 4* (Maximum = 4)
+====
+
+
+== LLM-spezifische Fehlerarten
+
+LLM-generierter Code scheitert qualitativ anders als menschlicher Code.
+
+=== Plausibel aber subtil falsch
+
+Code kompiliert, besteht oberflächliche Reviews, enthält aber fundamentale Fehler.
+https://www.businesswire.com/news/home/20251217666881/en/CodeRabbits-State-of-AI-vs-Human-Code-Generation-Report-Finds-That-AI-Written-Code-Produces-1.7x-More-Issues-Than-Human-Code[CodeRabbit] fand *1,7× mehr Issues pro PR* in AI-Code vs. menschlichem Code — Logikfehler 1,75× häufiger, Sicherheitslücken 1,5–2× häufiger, Performance-Probleme 8× häufiger.
+
+https://www.databricks.com/blog/passing-security-vibe-check-dangers-vibe-coding[Databricks' AI Red Team] dokumentierte einen Fall, in dem ein LLM ein Netzwerkspiel mit Pythons `pickle` für Deserialisierung generierte — ohne Validierung, was zu Remote Code Execution führte.
+
+=== Halluzinierte Packages (Slopsquatting)
+
+https://www.helpnetsecurity.com/2025/04/14/package-hallucination-slopsquatting-malicious-code/[~20% der von LLMs empfohlenen Packages existieren nicht].
+43% der halluzinierten Namen erscheinen konsistent über wiederholte Prompts — was sie für Angreifer weaponisierbar macht.
+Das halluzinierte Package „huggingface-cli" wurde https://www.infosecurity-magazine.com/news/ai-hallucinations-slopsquatting/[über 30.000 mal installiert].
+
+=== Automation Complacency
+
+Die https://arxiv.org/abs/2211.03622[Stanford-Studie (Perry et al., 2022)] zeigte: Entwickler mit AI-Assistenten produzieren *mehr* Sicherheitslücken und glauben *gleichzeitig*, sichereren Code zu schreiben.
+Die https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/[METR-RCT-Studie (Juli 2025)] fand: Erfahrene Open-Source-Entwickler waren 19% langsamer mit AI-Tools, obwohl sie glaubten, 24% schneller zu sein.
+https://devclass.com/2025/02/20/ai-is-eroding-code-quality-states-new-in-depth-report/[GitClear] dokumentierte einen 30% Rückgang der Review-Beteiligung.
+
+
+== Mitigationsmaßnahmen nach Typ
+
+Die Maßnahmen sind *kumulativ*: Jeder Tier umfasst alle Maßnahmen der niedrigeren Tiers.
+
+=== Deterministisch icon:check-circle[]
+
+Garantierte Erkennung innerhalb ihres Scopes. Kein False-Negative-Risiko innerhalb der abgedeckten Patterns.
+
+[cols="2,3,1", options="header"]
+|===
+| Maßnahme | Beschreibung | Ab Tier
+
+| Linter & Formatter
+| ESLint, Prettier, Ruff
+| 1
+
+| Type Checking
+| TypeScript strict, mypy
+| 1
+
+| Pre-Commit Hooks
+| Secrets-Scanning, Lint, Format
+| 1
+
+| Dependency Check
+| npm audit, pip-audit
+| 1
+
+| CI Build & Unit Tests
+| Grüner Build als Merge-Gate
+| 1
+
+| SAST
+| Semgrep, CodeQL — als CI-Gate
+| 2
+
+| SonarQube Quality Gate
+| Coverage ≥70%, 0 Critical Vulns
+| 2
+
+| Sandbox / Isolation
+| Firecracker microVM, Deno Sandbox
+| 3
+
+| Canary Deployments
+| Schrittweiser Rollout + Auto-Rollback
+| 3
+
+| Formale Verifikation
+| Dafny, TLA+, SPARK
+| 4
+
+| MC/DC Test Coverage
+| Pflicht bei DO-178C DAL A/B
+| 4
+
+| Contract-Based Design
+| Pre/Postconditions + Invarianten
+| 4
+|===
+
+=== Probabilistisch icon:search[]
+
+Findet vieles, aber nicht alles. Erhöht die Erkennungsrate, bietet keine Garantie.
+
+[cols="2,3,1", options="header"]
+|===
+| Maßnahme | Beschreibung | Ab Tier
+
+| AI Code Review
+| CodeRabbit, Copilot Review (unabhängig vom Generator)
+| 2
+
+| Property-Based Tests
+| Hypothesis, fast-check — 81% Bug-Detection bei Edge Cases
+| 2
+
+| Fuzzing
+| Fuzz4All, AFL++ — findet Crashes/Vulns via Random Inputs
+| 3
+|===
+
+=== Organisatorisch icon:users[]
+
+Braucht Menschen, skaliert am schlechtesten. Deshalb erst ab Tier 2/3.
+
+[cols="2,3,1", options="header"]
+|===
+| Maßnahme | Beschreibung | Ab Tier
+
+| Stichproben-Review
+| ~20% der PRs, rotierend, risiko-gewichtet
+| 2
+
+| Pflicht Human Review
+| Jeder PR mit Auth/PII/Payment → Senior Engineer
+| 3
+
+| Penetration Testing
+| Regelmäßige Security-Audits
+| 3
+
+| PromptBOM / Provenance
+| Modell, Prompt, Approver dokumentieren
+| 3
+
+| Unabhängige Re-Verifikation
+| Separates Team, analog DO-178C
+| 4
+
+| Zertifizierungsprozess
+| IEC 61508, DO-178C, ISO 26262
+| 4
+
+| AI nur als Entwurfshilfe
+| LLM generiert Vorschlag, Mensch implementiert
+| 4
+|===
+
+
+== Empfehlungen für den organisatorischen Umgang
+
+=== Anti-Pattern: Einheitsprozess für allen Code
+
+[quote, https://autonomyai.io/technology/ai-governance-for-engineering-teams-a-practical-playbook-for-safe-fast-software-delivery/[AutonomyAI Governance Playbook]]
+Das fundamentale Anti-Pattern ist, Low-Risk-Änderungen durch High-Risk-Governance zu zwingen.
+
+=== Empfohlenes Modell: Risiko-basiertes Routing
+
+. *Fast-Merge-Path* (Tier 1): Dokumentation, Config, UI-Änderungen → automatische Gates, sofortiger Merge
+. *Standard-Path* (Tier 2): Typischer Produkt-Code → automatische Gates + Stichproben-Review
+. *Review-Path* (Tier 3+): Auth, Billing, PII, Infrastruktur → zusätzliche Reviewer + Staged Rollout
+
+=== Unabhängige AI-Review als Governance-Layer
+
+Das Review-LLM muss *unabhängig* vom generierenden LLM sein — „ein Auditor erstellt nicht die Bücher" (https://www.greptile.com/blog/ai-code-review-bubble[Greptile]).
+Separate Agents für Generierung und Validierung reduzieren korrelierte Fehler.
+
+=== CI/CD-Pipeline als Backbone
+
+SonarQube Quality Gates bieten die ausgereifteste Infrastruktur:
+
+* Konfigurierbare Schwellwerte (Coverage, Vulnerabilities, Code Smells)
+* Automatische Blockierung bei Nicht-Erfüllung
+* Integration in alle gängigen CI-Systeme
+
+=== Provenance & Accountability
+
+* Code, der ausschließlich von AI erzeugt wurde, ist in den USA nicht urheberrechtlich schützbar
+* https://www.euaiact.com/key-issue/3[EU AI Act] (Enforcement ab August 2026): AI-Systeme als Produkte mit Strict Liability
+* PromptBOM: Modell, Prompt, Parameter, Approver dokumentieren
+* SBOM / AIBOM für Traceability
+
+
+== Referenzen
+
+=== Empirische Studien
+
+* https://www.veracode.com/blog/ai-generated-code-security-risks/[Veracode (2025)]: 45% Vulnerability-Rate in AI-generiertem Code
+* https://www.businesswire.com/news/home/20251217666881/en/CodeRabbits-State-of-AI-vs-Human-Code-Generation-Report-Finds-That-AI-Written-Code-Produces-1.7x-More-Issues-Than-Human-Code[CodeRabbit (Dez 2025)]: 1,7× mehr Issues in AI-Code, Analyse von 470 PRs
+* https://baxbench.com/[BaxBench]: 62% fehlerhafte LLM-generierte Backends
+* https://devclass.com/2025/02/20/ai-is-eroding-code-quality-states-new-in-depth-report/[GitClear (2025)]: 30% weniger Review-Beteiligung, Code-Refactoring von 25% auf <10%
+* https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/[METR RCT (Jul 2025)]: 19% langsamer mit AI-Tools
+* https://arxiv.org/abs/2211.03622[Perry et al. / Stanford (2022)]: Mehr Vulnerabilities bei höherem Sicherheitsgefühl
+* https://escape.tech/blog/methodology-how-we-discovered-vulnerabilities-apps-built-with-vibe-coding/[Escape.tech]: 2000+ Vulnerabilities in 5600 vibe-codierten Apps
+* https://www.helpnetsecurity.com/2025/04/14/package-hallucination-slopsquatting-malicious-code/[Slopsquatting-Studie]: ~20% halluzinierte Packages in LLM-generiertem Code
+* https://www.databricks.com/blog/passing-security-vibe-check-dangers-vibe-coding[Databricks AI Red Team]: Pickle-Deserialisierung und weitere Vibe-Coding-Risiken
+
+=== Frameworks & Guides
+
+* https://unit42.paloaltonetworks.com/securing-vibe-coding-tools/[Palo Alto Unit 42 SHIELD Framework] (Jan 2026)
+* https://www.aikido.dev/blog/vibe-coding-security[Aikido VCAL] — Vibe-Coding Assurance Levels
+* https://cloudsecurityalliance.org/blog/2025/04/09/secure-vibe-coding-guide[Cloud Security Alliance: Secure Vibe Coding Guide] (Apr 2025)
+* https://saif.google/secure-ai-framework[Google SAIF] — Secure AI Framework
+* https://www.invicti.com/blog/web-security/owasp-top-10-risks-llm-security-2025[OWASP LLM Top 10] (2025)
+* https://autonomyai.io/technology/ai-governance-for-engineering-teams-a-practical-playbook-for-safe-fast-software-delivery/[AutonomyAI Governance Playbook]
+* https://blog.gitguardian.com/automated-guard-rails-for-vibe-coding/[GitGuardian: Automated Guardrails for Vibe Coding]
+
+=== Standards
+
+* https://www.perforce.com/blog/qac/what-iec-61508-safety-integrity-levels-sils[IEC 61508] — Functional Safety (SIL)
+* https://en.wikipedia.org/wiki/DO-178C[DO-178C] — Software Considerations in Airborne Systems (DAL)
+* https://en.wikipedia.org/wiki/ISO_26262[ISO 26262] — Road Vehicles Functional Safety (ASIL)
+* https://www.euaiact.com/key-issue/3[EU AI Act] — Risk-Based Approach
+
+=== Forschung
+
+* https://arxiv.org/html/2509.22097v1[SecureAgentBench]: Benchmarking Secure Code Generation
+* https://arxiv.org/html/2510.25297[LLM-Generated Property-Based Tests]: Edge-Case-Erkennung
+* https://arxiv.org/abs/2308.04748[Fuzz4All]: Universal Fuzzing with LLMs
+* https://arxiv.org/abs/2402.09171[TestGen-LLM (Meta)]: Automated Unit Test Improvement at Scale
+
+
+== Lizenz
+
+Dieses Framework steht unter link:LICENSE[MIT-Lizenz].
