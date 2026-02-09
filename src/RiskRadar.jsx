@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import Asciidoctor from "@asciidoctor/core";
 import T from "./i18n.js";
 
-const VERSION = "1.1.0";
+const VERSION = "1.2.0";
 
 const TIER_BG = ["#10b981", "#f59e0b", "#f97316", "#ef4444"];
 const TYPE_COLORS = {
@@ -57,16 +57,16 @@ function RadarChart({ values, dimensions, size = 320 }) {
 function MitigationCard({ group, active, accent, t }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ border: `2px solid ${active ? accent : "#1e293b"}`, borderRadius: 12, background: active ? `${accent}10` : "#0f172a", padding: "12px 14px", opacity: active ? 1 : 0.35, transition: "all 0.3s" }}>
+    <div style={{ border: `2px solid ${active ? accent : "#1e293b"}`, borderRadius: 12, background: active ? `${accent}10` : "#0f172a", padding: "12px 14px", opacity: active ? 1 : 0.5, transition: "all 0.3s" }}>
       <div onClick={() => active && setOpen(!open)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: active ? "pointer" : "default" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 18 }}>{group.icon}</span>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 13, color: active ? "#f8fafc" : "#64748b" }}>{group.title}</div>
-            <div style={{ fontSize: 10, color: "#64748b" }}>{group.measures.length} {group.measures.length !== 1 ? t.measures : t.measure}</div>
+            <div style={{ fontWeight: 700, fontSize: 13, color: active ? "#f8fafc" : "#94a3b8" }}>{group.title}</div>
+            <div style={{ fontSize: 10, color: "#94a3b8" }}>{group.measures.length} {group.measures.length !== 1 ? t.measures : t.measure}</div>
           </div>
         </div>
-        {active && <span style={{ fontSize: 16, color: "#64748b", transform: open ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>▾</span>}
+        {active && <span style={{ fontSize: 16, color: "#94a3b8", transform: open ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>▾</span>}
       </div>
       {active && open && (
         <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -155,7 +155,7 @@ function DocSidebar({ docs, open, onClose }) {
               />
             </div>
           ))}
-          <div style={{ borderTop: "1px solid #1e293b", paddingTop: 16, marginTop: 8, fontSize: 11, color: "#475569", textAlign: "center" }}>
+          <div style={{ borderTop: "1px solid #1e293b", paddingTop: 16, marginTop: 8, fontSize: 11, color: "#94a3b8", textAlign: "center" }}>
             Generated with data from Veracode, CodeRabbit, BaxBench, Unit 42, Aikido Security, CSA, and others.
           </div>
         </div>
@@ -194,14 +194,14 @@ export default function RiskRadar() {
       </div>
 
       <h1 style={{ fontSize: 22, fontWeight: 700, textAlign: "center", margin: "0 0 4px", color: "#f8fafc" }}>{t.title}</h1>
-      <p style={{ textAlign: "center", color: "#64748b", fontSize: 13, margin: "0 0 18px" }}>{t.subtitle}</p>
+      <p style={{ textAlign: "center", color: "#94a3b8", fontSize: 13, margin: "0 0 18px" }}>{t.subtitle}</p>
 
       {/* Presets */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 5, justifyContent: "center", marginBottom: 18 }}>
         {t.presets.map((p) => {
           const active = JSON.stringify(values) === JSON.stringify(p.values);
           return (
-            <button key={p.name} onClick={() => setValues(p.values)} style={{ padding: "4px 9px", fontSize: 11, borderRadius: 6, border: active ? `2px solid ${tc}` : "1px solid #334155", background: active ? `${tc}22` : "#1e293b", color: active ? "#f8fafc" : "#94a3b8", cursor: "pointer", fontWeight: active ? 600 : 400, transition: "all 0.15s" }}>
+            <button key={p.name} onClick={() => setValues(p.values)} style={{ padding: "4px 9px", fontSize: 11, borderRadius: 6, border: active ? `2px solid ${tc}` : "1px solid #334155", background: active ? `${tc}22` : "#1e293b", color: active ? "#f8fafc" : "#cbd5e1", cursor: "pointer", fontWeight: active ? 600 : 400, transition: "all 0.15s" }}>
               {p.name}
             </button>
           );
@@ -232,7 +232,7 @@ export default function RiskRadar() {
                   <span style={{ fontSize: 10, color: sc, fontWeight: 600 }}>{dim.levels[v]}</span>
                 </div>
                 <input type="range" min={0} max={4} step={1} value={v} onChange={(e) => set(dim.key, parseInt(e.target.value))} style={{ width: "100%", accentColor: sc, height: 5, cursor: "pointer" }} />
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "#475569", marginTop: 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "#94a3b8", marginTop: 1 }}>
                   <span>{t.low}</span><span>{t.high}</span>
                 </div>
               </div>
@@ -244,7 +244,7 @@ export default function RiskRadar() {
         <div style={{ width: "100%", maxWidth: 500, borderTop: "1px solid #1e293b", paddingTop: 18 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{t.mitigationHeading}</h2>
-            <span style={{ fontSize: 11, color: "#64748b" }}>{activeCount} {t.active}</span>
+            <span style={{ fontSize: 11, color: "#94a3b8" }}>{activeCount} {t.active}</span>
           </div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
             {Object.entries(TYPE_COLORS).map(([key, c]) => (
@@ -262,9 +262,9 @@ export default function RiskRadar() {
           </div>
         </div>
 
-        <div style={{ marginTop: 24, fontSize: 10, color: "#475569", textAlign: "center", lineHeight: 1.8 }}>
-          <div>v{VERSION} · <a href="https://github.com/LLM-Coding/vibe-coding-risk-radar" target="_blank" rel="noopener" style={{ color: "#64748b" }}>{t.footer.github}</a> · <a href={`docs/risk-radar${lang === "en" ? "-en" : ""}.html`} target="_blank" rel="noopener" style={{ color: "#64748b" }}>{t.footer.fullDocs}</a></div>
-          <div>{t.footer.madeBy} <a href="https://www.linkedin.com/in/rdmueller" target="_blank" rel="noopener" style={{ color: "#64748b" }}>Ralf D. Müller</a></div>
+        <div style={{ marginTop: 24, fontSize: 10, color: "#94a3b8", textAlign: "center", lineHeight: 1.8 }}>
+          <div>v{VERSION} · <a href="https://github.com/LLM-Coding/vibe-coding-risk-radar" target="_blank" rel="noopener" style={{ color: "#94a3b8" }}>{t.footer.github}</a> · <a href={`docs/risk-radar${lang === "en" ? "-en" : ""}.html`} target="_blank" rel="noopener" style={{ color: "#94a3b8" }}>{t.footer.fullDocs}</a></div>
+          <div>{t.footer.madeBy} <a href="https://www.linkedin.com/in/rdmueller" target="_blank" rel="noopener" style={{ color: "#94a3b8" }}>Ralf D. Müller</a></div>
         </div>
       </div>
 
