@@ -129,7 +129,7 @@ export default function RiskRadar() {
         </div>
 
         <div className={styles.footer}>
-          <div>v{VERSION} · <a href="https://github.com/LLM-Coding/vibe-coding-risk-radar" target="_blank" rel="noopener" className={styles.footerLink}>{t.footer.github}</a> · <a href={`docs/risk-radar${lang === "en" ? "-en" : ""}.html`} target="_blank" rel="noopener" className={styles.footerLink}>{t.footer.fullDocs}</a></div>
+          <div>v{VERSION} · <a href="https://github.com/LLM-Coding/vibe-coding-risk-radar" target="_blank" rel="noopener" className={styles.footerLink}>{t.footer.github}</a> · <a href={`docs/risk-radar${lang === "en" ? "-en" : ""}.html`} target="_blank" rel="noopener" className={styles.footerLink}>{t.footer.fullDocs}</a> · <a href={`https://github.com/LLM-Coding/vibe-coding-risk-radar/issues/new?title=${encodeURIComponent(t.footer.feedbackTitle)}&body=${encodeURIComponent(t.footer.feedbackBody)}`} target="_blank" rel="noopener" className={styles.footerLink}>{t.footer.feedback}</a></div>
           <div>{t.footer.madeBy} <a href="https://www.linkedin.com/in/rdmueller" target="_blank" rel="noopener" className={styles.footerLink}>Ralf D. Müller</a></div>
         </div>
       </div>

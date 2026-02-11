@@ -1,4 +1,4 @@
-export const VERSION = "1.5.0";
+export const VERSION = "1.5.1";
 
 export const TIER_BG = ["#10b981", "#f59e0b", "#f97316", "#ef4444"];
 

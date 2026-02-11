@@ -105,6 +105,9 @@ const T = {
     footer: {
       github: "GitHub",
       fullDocs: "Ausführliche Dokumentation",
+      feedback: "Feedback",
+      feedbackTitle: "Feedback: Risiko-Kategorien",
+      feedbackBody: `## Bereich\n<!-- Welche Kategorie/Dimension/Tier betrifft Ihr Feedback? -->\n\n## Feedback\n<!-- Beschreiben Sie Ihren Vorschlag oder Ihre Beobachtung -->\n\n## Kontext (optional)\n<!-- Aus welcher Branche/Rolle kommen Sie? Hilft uns bei der Einordnung. -->`,
       madeBy: "Erstellt von",
     },
     docs: {
@@ -293,6 +296,9 @@ Dieses Framework bietet eine https://github.com/LLM-Coding/Semantic-Anchors?tab=
     footer: {
       github: "GitHub",
       fullDocs: "Full Documentation",
+      feedback: "Feedback",
+      feedbackTitle: "Feedback: Risk Categories",
+      feedbackBody: `## Area\n<!-- Which category/dimension/tier does your feedback concern? -->\n\n## Feedback\n<!-- Describe your suggestion or observation -->\n\n## Context (optional)\n<!-- What industry/role are you from? Helps us prioritize. -->`,
       madeBy: "Created by",
     },
     docs: {
