@@ -1,0 +1,216 @@
+.app {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 20px 16px;
+  transition: margin-right 0.3s;
+}
+
+.topBar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: 800px;
+  margin: 0 auto 12px;
+}
+
+.btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 4px;
+  color: var(--text-heading);
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 18px;
+  margin: 0 0 18px;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.presetBtn {
+  padding: 6px 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.chartWrapper {
+  width: 100%;
+  max-width: 320px;
+}
+
+.tierBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  padding: 8px 18px;
+}
+
+.tierNumber {
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.tierLabel {
+  font-weight: 700;
+  font-size: 19px;
+}
+
+.tierDesc {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.sliders {
+  width: 100%;
+  max-width: 460px;
+}
+
+.sliderGroup {
+  margin-bottom: 14px;
+}
+
+.sliderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 3px;
+}
+
+.sliderLabel {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.sliderLevel {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.slider {
+  width: 100%;
+  height: 5px;
+  cursor: pointer;
+}
+
+.sliderRange {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+
+.mitigations {
+  width: 100%;
+  max-width: 500px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 18px;
+}
+
+.mitigationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.mitigationTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.mitigationCount {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.legend {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legendDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+.legendLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.cumulativeNote {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.cumulativeStrong {
+  color: var(--text-primary);
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer {
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.8;
+}
+
+.footerLink {
+  color: var(--text-secondary);
+}
