@@ -1,85 +1,11 @@
-import { useState, useRef, useEffect, useMemo } from "react";
-import Asciidoctor from "@asciidoctor/core";
+import { useState } from "react";
 import T from "./i18n.js";
 import { useTheme } from "./theme.js";
 import { VERSION, TIER_BG, TYPE_COLORS } from "./constants.js";
 import { getTierIndex, detectBrowserLanguage } from "./utils.js";
 import RadarChart from "./components/RadarChart.jsx";
 import MitigationCard from "./components/MitigationCard.jsx";
-
-const adoc = Asciidoctor();
-
-const ADOC_SIDEBAR_STYLES = `
-  .adoc-content p { margin: 0.5em 0; }
-  .adoc-content a { color: var(--link); text-decoration: underline; text-decoration-color: var(--link-underline); }
-  .adoc-content a:hover { text-decoration-color: var(--link); }
-  .adoc-content strong { color: var(--text-primary); }
-  .adoc-content code { background: var(--bg-card); padding: 1px 4px; border-radius: 3px; font-size: 0.92em; }
-`;
-
-function DocSidebar({ docs, open, onClose }) {
-  const ref = useRef(null);
-  useEffect(() => { if (open && ref.current) ref.current.scrollTop = 0; }, [open]);
-  useEffect(() => {
-    if (open && ref.current) {
-      ref.current.querySelectorAll(".adoc-content a").forEach((a) => {
-        a.setAttribute("target", "_blank");
-        a.setAttribute("rel", "noopener");
-      });
-    }
-  });
-
-  const rendered = useMemo(() =>
-    docs.sections.map((sec) => ({
-      ...sec,
-      html: adoc.convert(sec.content, { safe: "safe", attributes: { showtitle: false } }),
-    })),
-    [docs.sections]
-  );
-
-  return (
-    <div
-      ref={ref}
-      style={{
-        position: "fixed", top: 0, right: 0, bottom: 0,
-        width: open ? "min(480px, 85vw)" : "0",
-        background: "var(--bg-sidebar)", borderLeft: open ? "1px solid var(--border)" : "none",
-        overflowY: "auto", overflowX: "hidden",
-        transition: "width 0.3s ease",
-        zIndex: 1000,
-        boxShadow: open ? "-8px 0 30px var(--shadow)" : "none",
-      }}
-    >
-      {open && (
-        <div style={{ padding: "24px 20px" }}>
-          <style>{ADOC_SIDEBAR_STYLES}</style>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "var(--text-heading)" }}>{docs.title}</h2>
-            <button onClick={onClose} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", padding: "6px 12px", cursor: "pointer", fontSize: 16 }}>✕</button>
-          </div>
-          {rendered.map((sec) => (
-            <div key={sec.id} style={{
-              marginBottom: 28,
-              ...(sec.id === "disclaimer" ? { background: "var(--bg-card)", borderRadius: 10, padding: "14px 16px", border: "1px solid var(--border)" } : {}),
-            }}>
-              <h3 style={{ fontSize: 20, fontWeight: 700, color: sec.id === "disclaimer" ? "#f59e0b" : "var(--text-primary)", margin: "0 0 10px", paddingBottom: 6, borderBottom: sec.id === "disclaimer" ? "none" : "1px solid var(--border-subtle)" }}>
-                {sec.id === "disclaimer" ? "\u26A0\uFE0F " : ""}{sec.title}
-              </h3>
-              <div
-                className="adoc-content"
-                style={{ fontSize: 18, color: "var(--text-secondary)", lineHeight: 1.7 }}
-                dangerouslySetInnerHTML={{ __html: sec.html }}
-              />
-            </div>
-          ))}
-          <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: 16, marginTop: 8, fontSize: 15, color: "var(--text-secondary)", textAlign: "center" }}>
-            Generated with data from Veracode, CodeRabbit, BaxBench, Unit 42, Aikido Security, CSA, and others.
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+import DocSidebar from "./components/DocSidebar.jsx";
 
 export default function RiskRadar() {
   const [lang, setLang] = useState(() => {
