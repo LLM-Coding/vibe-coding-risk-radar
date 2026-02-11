@@ -188,6 +188,30 @@ Dieses Framework bietet eine https://github.com/LLM-Coding/Semantic-Anchors?tab=
 
 *Tooling:* Semgrep, CodeQL, SonarQube, GitGuardian, Firecracker, Deno Sandbox, Fuzz4All, Hypothesis`,
         },
+        {
+          id: "skills",
+          title: "Claude Code Skills",
+          content: `Dieses Framework bietet zwei https://code.claude.com/docs/en/skills[Claude Code Skills], die direkt in Ihrem Projekt arbeiten:
+
+*\/risk-assess* — Analysiert Ihr Repository automatisch, erkennt Module (Monorepo, Frontend/Backend etc.), scannt Code-Patterns und fragt gezielt nach Dimensionen, die nicht auto-detektiert werden können. Schreibt eine strukturierte Risikobewertung pro Modul in Ihre \`CLAUDE.md\`.
+
+*\/risk-mitigate* — Liest die Risikobewertung aus \`CLAUDE.md\`, erkennt bereits vorhandene Maßnahmen (Linter, CI, SAST etc.) und hilft fehlende Mitigations Schritt für Schritt umzusetzen — von Tool-Installation bis CI-Konfiguration.
+
+*Installation — Plugin (empfohlen):*
+
+\`\`\`
+/plugin marketplace add LLM-Coding/vibe-coding-risk-radar
+/plugin install risk-radar-skills@vibe-coding-risk-radar
+\`\`\`
+
+*Installation — manuell:*
+
+\`\`\`
+curl -sL https://raw.githubusercontent.com/LLM-Coding/vibe-coding-risk-radar/main/install-skills.sh | bash
+\`\`\`
+
+Quellcode der Skills: https://github.com/LLM-Coding/vibe-coding-risk-radar/tree/main/.claude/skills[GitHub]`,
+        },
       ],
     },
   },
@@ -378,6 +402,30 @@ This framework provides a https://github.com/LLM-Coding/Semantic-Anchors?tab=rea
 *Empirical Data:* https://www.veracode.com/blog/ai-generated-code-security-risks/[Veracode] (45% vulnerability rate), https://www.businesswire.com/news/home/20251217666881/en/CodeRabbits-State-of-AI-vs-Human-Code-Generation-Report-Finds-That-AI-Written-Code-Produces-1.7x-More-Issues-Than-Human-Code[CodeRabbit] (1.7× more issues), https://baxbench.com/[BaxBench] (62% faulty backends), https://devclass.com/2025/02/20/ai-is-eroding-code-quality-states-new-in-depth-report/[GitClear] (30% fewer reviews), https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/[METR RCT] (19% slower with AI)
 
 *Tooling:* Semgrep, CodeQL, SonarQube, GitGuardian, Firecracker, Deno Sandbox, Fuzz4All, Hypothesis`,
+        },
+        {
+          id: "skills",
+          title: "Claude Code Skills",
+          content: `This framework provides two https://code.claude.com/docs/en/skills[Claude Code Skills] that work directly in your project:
+
+*\/risk-assess* — Automatically analyzes your repository, detects modules (monorepo, frontend/backend, etc.), scans code patterns, and asks targeted questions for dimensions that can't be auto-detected. Writes a structured risk assessment per module to your \`CLAUDE.md\`.
+
+*\/risk-mitigate* — Reads the risk assessment from \`CLAUDE.md\`, detects already-present measures (linter, CI, SAST, etc.), and helps implement missing mitigations step by step — from tool installation to CI configuration.
+
+*Installation — Plugin (recommended):*
+
+\`\`\`
+/plugin marketplace add LLM-Coding/vibe-coding-risk-radar
+/plugin install risk-radar-skills@vibe-coding-risk-radar
+\`\`\`
+
+*Installation — manual:*
+
+\`\`\`
+curl -sL https://raw.githubusercontent.com/LLM-Coding/vibe-coding-risk-radar/main/install-skills.sh | bash
+\`\`\`
+
+Skills source code: https://github.com/LLM-Coding/vibe-coding-risk-radar/tree/main/.claude/skills[GitHub]`,
         },
       ],
     },

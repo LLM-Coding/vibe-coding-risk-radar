@@ -1,0 +1,24 @@
+{
+  "name": "vibe-coding-risk-radar",
+  "owner": {
+    "name": "Ralf D. Müller",
+    "email": "ralf.d.mueller@gmail.com"
+  },
+  "metadata": {
+    "description": "Risk assessment and mitigation skills for AI-generated code based on the Vibe-Coding Risk Radar framework",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "risk-radar-skills",
+      "description": "Assess vibe-coding risk per module and implement mitigation measures. Includes /risk-assess for interactive risk analysis and /risk-mitigate for implementing recommended measures.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./.claude/skills/risk-assess",
+        "./.claude/skills/risk-mitigate",
+        "./.claude/skills/shared"
+      ]
+    }
+  ]
+}
