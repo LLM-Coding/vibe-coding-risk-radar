@@ -134,6 +134,10 @@ export default function RiskRadar() {
         </div>
       </div>
 
+      <a href={`https://github.com/LLM-Coding/vibe-coding-risk-radar/issues/new?title=${encodeURIComponent(t.footer.feedbackTitle)}&body=${encodeURIComponent(t.footer.feedbackBody)}`} target="_blank" rel="noopener" className={styles.fab}>
+        <span className={styles.fabIcon}>💬</span> {t.footer.feedback}
+      </a>
+
       <DocSidebar docs={t.docs} open={docsOpen} onClose={() => setDocsOpen(false)} />
     </div>
   );
