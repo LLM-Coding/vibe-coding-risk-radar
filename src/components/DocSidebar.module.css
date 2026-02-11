@@ -85,6 +85,22 @@
   line-height: 1.7;
 }
 
+.adocBody pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.adocBody code {
+  font-size: 13px;
+}
+
 .footer {
   border-top: 1px solid var(--border-subtle);
   padding-top: 16px;
