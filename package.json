@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "docs": "asciidoctor -a icons=font -a source-highlighter=highlight.js -a linkcss -a stylesheet=asciidoctor.css -D dist/docs docs/risk-radar.adoc docs/risk-radar-en.adoc"
+    "docs": "asciidoctor -a icons=font -a source-highlighter=highlight.js -a linkcss -a stylesheet=asciidoctor.css -D dist/docs docs/risk-radar.adoc docs/risk-radar-en.adoc",
+    "prepare": "husky"
   },
   "dependencies": {
     "@asciidoctor/core": "^3.0.4",
@@ -15,8 +16,26 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "globals": "^17.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
     "vite": "^6.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,json,md}": [
+      "prettier --write"
+    ]
   },
   "license": "MIT"
 }

@@ -24,24 +24,64 @@ const T = {
     },
     dimensions: [
       {
-        key: "codeType", label: "Code-Typ", shortLabel: "Code",
-        levels: ["UI / CSS / Doku", "Build-Scripts / Tests", "Business-Logik", "API / DB-Queries", "Auth / Security / Crypto"],
+        key: "codeType",
+        label: "Code-Typ",
+        shortLabel: "Code",
+        levels: [
+          "UI / CSS / Doku",
+          "Build-Scripts / Tests",
+          "Business-Logik",
+          "API / DB-Queries",
+          "Auth / Security / Crypto",
+        ],
       },
       {
-        key: "language", label: "Sprachsicherheit", shortLabel: "Sprache",
-        levels: ["Statisch + Memory-safe (Rust)", "Statisch typisiert (Java, Go, TS)", "Dynamisch typisiert (Python, JS)", "Memory-unsafe managed (C#/unsafe)", "Memory-unsafe (C, C++)"],
+        key: "language",
+        label: "Sprachsicherheit",
+        shortLabel: "Sprache",
+        levels: [
+          "Statisch + Memory-safe (Rust)",
+          "Statisch typisiert (Java, Go, TS)",
+          "Dynamisch typisiert (Python, JS)",
+          "Memory-unsafe managed (C#/unsafe)",
+          "Memory-unsafe (C, C++)",
+        ],
       },
       {
-        key: "deployment", label: "Deployment-Kontext", shortLabel: "Deploy",
-        levels: ["Persönlich / Prototyp", "Internes Tool", "Public-facing App", "Reguliertes System", "Safety-critical (Avionik etc.)"],
+        key: "deployment",
+        label: "Deployment-Kontext",
+        shortLabel: "Deploy",
+        levels: [
+          "Persönlich / Prototyp",
+          "Internes Tool",
+          "Public-facing App",
+          "Reguliertes System",
+          "Safety-critical (Avionik etc.)",
+        ],
       },
       {
-        key: "data", label: "Datensensibilität", shortLabel: "Daten",
-        levels: ["Öffentliche Daten", "Interne Geschäftsdaten", "Allg. PII (Name, E-Mail)", "Sensible PII (SSN, Biometrie)", "PHI / PCI (HIPAA, Kreditkarten)"],
+        key: "data",
+        label: "Datensensibilität",
+        shortLabel: "Daten",
+        levels: [
+          "Öffentliche Daten",
+          "Interne Geschäftsdaten",
+          "Allg. PII (Name, E-Mail)",
+          "Sensible PII (SSN, Biometrie)",
+          "PHI / PCI (HIPAA, Kreditkarten)",
+        ],
       },
       {
-        key: "blastRadius", label: "Blast Radius", shortLabel: "Blast",
-        levels: ["Kosmetisch / Tech Debt", "Performance / DoS", "Datenverlust (wiederherstellbar)", "Systemischer Breach", "Safety (Leib & Leben)"],
+        key: "blastRadius",
+        label: "Blast Radius",
+        shortLabel: "Blast",
+        levels: [
+          "Kosmetisch / Tech Debt",
+          "Performance / DoS",
+          "Datenverlust (wiederherstellbar)",
+          "Systemischer Breach",
+          "Safety (Leib & Leben)",
+        ],
       },
     ],
     tiers: [
@@ -60,45 +100,141 @@ const T = {
     ],
     mitigations: [
       {
-        tier: 1, title: "Automatische Gates (immer aktiv)", icon: "⚙️",
+        tier: 1,
+        title: "Automatische Gates (immer aktiv)",
+        icon: "⚙️",
         measures: [
-          { name: "Linter & Formatter", desc: "ESLint, Prettier, Ruff — schnelles Feedback, null Aufwand", type: "deterministic" },
-          { name: "Type Checking", desc: "TypeScript strict, mypy — ganze Fehlerklassen ausgeschlossen", type: "deterministic" },
-          { name: "Pre-Commit Hooks", desc: "Secrets-Scanning (GitGuardian), Lint, Format vor jedem Commit", type: "deterministic" },
-          { name: "Dependency Check", desc: "npm audit, pip-audit — bekannte CVEs in Dependencies blocken", type: "deterministic" },
-          { name: "CI Build & Unit Tests", desc: "Grüner Build als Merge-Bedingung — fängt Regressionen ab", type: "deterministic" },
+          {
+            name: "Linter & Formatter",
+            desc: "ESLint, Prettier, Ruff — schnelles Feedback, null Aufwand",
+            type: "deterministic",
+          },
+          {
+            name: "Type Checking",
+            desc: "TypeScript strict, mypy — ganze Fehlerklassen ausgeschlossen",
+            type: "deterministic",
+          },
+          {
+            name: "Pre-Commit Hooks",
+            desc: "Secrets-Scanning (GitGuardian), Lint, Format vor jedem Commit",
+            type: "deterministic",
+          },
+          {
+            name: "Dependency Check",
+            desc: "npm audit, pip-audit — bekannte CVEs in Dependencies blocken",
+            type: "deterministic",
+          },
+          {
+            name: "CI Build & Unit Tests",
+            desc: "Grüner Build als Merge-Bedingung — fängt Regressionen ab",
+            type: "deterministic",
+          },
         ],
       },
       {
-        tier: 2, title: "Erweiterte Absicherung", icon: "🔍",
+        tier: 2,
+        title: "Erweiterte Absicherung",
+        icon: "🔍",
         measures: [
-          { name: "SAST (Semgrep, CodeQL)", desc: "Statische Analyse auf Vulnerability-Patterns — als CI-Gate", type: "deterministic" },
-          { name: "AI Code Review", desc: "CodeRabbit, Copilot Review — unabhängig vom generierenden LLM", type: "probabilistic" },
-          { name: "Property-Based Tests", desc: "Hypothesis, fast-check — 81% Bug-Detection bei Edge Cases", type: "probabilistic" },
-          { name: "SonarQube Quality Gate", desc: "Coverage ≥70%, 0 Critical Vulns, 0 Blocker als Merge-Gate", type: "deterministic" },
-          { name: "Stichproben-Review", desc: "Mensch reviewt ~20% der PRs (rotierend, risiko-gewichtet)", type: "organizational" },
+          {
+            name: "SAST (Semgrep, CodeQL)",
+            desc: "Statische Analyse auf Vulnerability-Patterns — als CI-Gate",
+            type: "deterministic",
+          },
+          {
+            name: "AI Code Review",
+            desc: "CodeRabbit, Copilot Review — unabhängig vom generierenden LLM",
+            type: "probabilistic",
+          },
+          {
+            name: "Property-Based Tests",
+            desc: "Hypothesis, fast-check — 81% Bug-Detection bei Edge Cases",
+            type: "probabilistic",
+          },
+          {
+            name: "SonarQube Quality Gate",
+            desc: "Coverage ≥70%, 0 Critical Vulns, 0 Blocker als Merge-Gate",
+            type: "deterministic",
+          },
+          {
+            name: "Stichproben-Review",
+            desc: "Mensch reviewt ~20% der PRs (rotierend, risiko-gewichtet)",
+            type: "organizational",
+          },
         ],
       },
       {
-        tier: 3, title: "Pflicht-Maßnahmen für hohes Risiko", icon: "🛡️",
+        tier: 3,
+        title: "Pflicht-Maßnahmen für hohes Risiko",
+        icon: "🛡️",
         measures: [
-          { name: "Pflicht Human Review", desc: "Jeder PR mit Auth/PII/Payment wird von Senior Engineer reviewt", type: "organizational" },
-          { name: "Sandbox / Isolation", desc: "Firecracker microVM, Deno Sandbox — Schadensbegrenzung bei Exploit", type: "deterministic" },
-          { name: "Fuzzing", desc: "Fuzz4All, AFL++ — findet Crashes und Vulns durch zufällige Inputs", type: "probabilistic" },
-          { name: "Penetration Testing", desc: "Regelmäßige Security-Audits auf Auth-Flows und API-Endpoints", type: "organizational" },
-          { name: "Canary Deployments", desc: "Schrittweiser Rollout mit automatischem Rollback bei Anomalien", type: "deterministic" },
-          { name: "PromptBOM / Provenance", desc: "Dokumentation: welches Modell, welcher Prompt, wer hat approved", type: "organizational" },
+          {
+            name: "Pflicht Human Review",
+            desc: "Jeder PR mit Auth/PII/Payment wird von Senior Engineer reviewt",
+            type: "organizational",
+          },
+          {
+            name: "Sandbox / Isolation",
+            desc: "Firecracker microVM, Deno Sandbox — Schadensbegrenzung bei Exploit",
+            type: "deterministic",
+          },
+          {
+            name: "Fuzzing",
+            desc: "Fuzz4All, AFL++ — findet Crashes und Vulns durch zufällige Inputs",
+            type: "probabilistic",
+          },
+          {
+            name: "Penetration Testing",
+            desc: "Regelmäßige Security-Audits auf Auth-Flows und API-Endpoints",
+            type: "organizational",
+          },
+          {
+            name: "Canary Deployments",
+            desc: "Schrittweiser Rollout mit automatischem Rollback bei Anomalien",
+            type: "deterministic",
+          },
+          {
+            name: "PromptBOM / Provenance",
+            desc: "Dokumentation: welches Modell, welcher Prompt, wer hat approved",
+            type: "organizational",
+          },
         ],
       },
       {
-        tier: 4, title: "Kritisch — AI-Einsatz stark einschränken", icon: "🚨",
+        tier: 4,
+        title: "Kritisch — AI-Einsatz stark einschränken",
+        icon: "🚨",
         measures: [
-          { name: "Formale Verifikation", desc: "Dafny, TLA+, SPARK — mathematischer Beweis der Korrektheit", type: "deterministic" },
-          { name: "Unabhängige Re-Verifikation", desc: "Separates Team verifiziert Output — analog DO-178C DAL A", type: "organizational" },
-          { name: "MC/DC Test Coverage", desc: "Modified Condition/Decision Coverage — Pflicht bei DAL A/B", type: "deterministic" },
-          { name: "Contract-Based Design", desc: "Pre/Postconditions + Invarianten — Spec first, dann Generierung", type: "deterministic" },
-          { name: "Zertifizierungsprozess", desc: "IEC 61508, DO-178C, ISO 26262 Compliance — kein Shortcut möglich", type: "organizational" },
-          { name: "AI nur als Entwurfshilfe", desc: "LLM generiert Vorschlag, Mensch implementiert und verifiziert", type: "organizational" },
+          {
+            name: "Formale Verifikation",
+            desc: "Dafny, TLA+, SPARK — mathematischer Beweis der Korrektheit",
+            type: "deterministic",
+          },
+          {
+            name: "Unabhängige Re-Verifikation",
+            desc: "Separates Team verifiziert Output — analog DO-178C DAL A",
+            type: "organizational",
+          },
+          {
+            name: "MC/DC Test Coverage",
+            desc: "Modified Condition/Decision Coverage — Pflicht bei DAL A/B",
+            type: "deterministic",
+          },
+          {
+            name: "Contract-Based Design",
+            desc: "Pre/Postconditions + Invarianten — Spec first, dann Generierung",
+            type: "deterministic",
+          },
+          {
+            name: "Zertifizierungsprozess",
+            desc: "IEC 61508, DO-178C, ISO 26262 Compliance — kein Shortcut möglich",
+            type: "organizational",
+          },
+          {
+            name: "AI nur als Entwurfshilfe",
+            desc: "LLM generiert Vorschlag, Mensch implementiert und verifiziert",
+            type: "organizational",
+          },
         ],
       },
     ],
@@ -193,9 +329,9 @@ Dieses Framework bietet eine https://github.com/LLM-Coding/Semantic-Anchors?tab=
           title: "Claude Code Skills",
           content: `Dieses Framework bietet zwei https://code.claude.com/docs/en/skills[Claude Code Skills], die direkt in Ihrem Projekt arbeiten:
 
-*\/risk-assess* — Analysiert Ihr Repository automatisch, erkennt Module (Monorepo, Frontend/Backend etc.), scannt Code-Patterns und fragt gezielt nach Dimensionen, die nicht auto-detektiert werden können. Schreibt eine strukturierte Risikobewertung pro Modul in Ihre \`CLAUDE.md\`.
+*/risk-assess* — Analysiert Ihr Repository automatisch, erkennt Module (Monorepo, Frontend/Backend etc.), scannt Code-Patterns und fragt gezielt nach Dimensionen, die nicht auto-detektiert werden können. Schreibt eine strukturierte Risikobewertung pro Modul in Ihre \`CLAUDE.md\`.
 
-*\/risk-mitigate* — Liest die Risikobewertung aus \`CLAUDE.md\`, erkennt bereits vorhandene Maßnahmen (Linter, CI, SAST etc.) und hilft fehlende Mitigations Schritt für Schritt umzusetzen — von Tool-Installation bis CI-Konfiguration.
+*/risk-mitigate* — Liest die Risikobewertung aus \`CLAUDE.md\`, erkennt bereits vorhandene Maßnahmen (Linter, CI, SAST etc.) und hilft fehlende Mitigations Schritt für Schritt umzusetzen — von Tool-Installation bis CI-Konfiguration.
 
 *Installation — Plugin (empfohlen):*
 
@@ -239,24 +375,64 @@ Quellcode der Skills: https://github.com/LLM-Coding/vibe-coding-risk-radar/tree/
     },
     dimensions: [
       {
-        key: "codeType", label: "Code Type", shortLabel: "Code",
-        levels: ["UI / CSS / Docs", "Build scripts / Tests", "Business logic", "API / DB queries", "Auth / Security / Crypto"],
+        key: "codeType",
+        label: "Code Type",
+        shortLabel: "Code",
+        levels: [
+          "UI / CSS / Docs",
+          "Build scripts / Tests",
+          "Business logic",
+          "API / DB queries",
+          "Auth / Security / Crypto",
+        ],
       },
       {
-        key: "language", label: "Language Safety", shortLabel: "Lang",
-        levels: ["Static + Memory-safe (Rust)", "Statically typed (Java, Go, TS)", "Dynamically typed (Python, JS)", "Memory-unsafe managed (C#/unsafe)", "Memory-unsafe (C, C++)"],
+        key: "language",
+        label: "Language Safety",
+        shortLabel: "Lang",
+        levels: [
+          "Static + Memory-safe (Rust)",
+          "Statically typed (Java, Go, TS)",
+          "Dynamically typed (Python, JS)",
+          "Memory-unsafe managed (C#/unsafe)",
+          "Memory-unsafe (C, C++)",
+        ],
       },
       {
-        key: "deployment", label: "Deployment Context", shortLabel: "Deploy",
-        levels: ["Personal / Prototype", "Internal tool", "Public-facing app", "Regulated system", "Safety-critical (avionics etc.)"],
+        key: "deployment",
+        label: "Deployment Context",
+        shortLabel: "Deploy",
+        levels: [
+          "Personal / Prototype",
+          "Internal tool",
+          "Public-facing app",
+          "Regulated system",
+          "Safety-critical (avionics etc.)",
+        ],
       },
       {
-        key: "data", label: "Data Sensitivity", shortLabel: "Data",
-        levels: ["Public data", "Internal business data", "General PII (name, email)", "Sensitive PII (SSN, biometrics)", "PHI / PCI (HIPAA, credit cards)"],
+        key: "data",
+        label: "Data Sensitivity",
+        shortLabel: "Data",
+        levels: [
+          "Public data",
+          "Internal business data",
+          "General PII (name, email)",
+          "Sensitive PII (SSN, biometrics)",
+          "PHI / PCI (HIPAA, credit cards)",
+        ],
       },
       {
-        key: "blastRadius", label: "Blast Radius", shortLabel: "Blast",
-        levels: ["Cosmetic / Tech debt", "Performance / DoS", "Data loss (recoverable)", "Systemic breach", "Safety (life & limb)"],
+        key: "blastRadius",
+        label: "Blast Radius",
+        shortLabel: "Blast",
+        levels: [
+          "Cosmetic / Tech debt",
+          "Performance / DoS",
+          "Data loss (recoverable)",
+          "Systemic breach",
+          "Safety (life & limb)",
+        ],
       },
     ],
     tiers: [
@@ -275,45 +451,141 @@ Quellcode der Skills: https://github.com/LLM-Coding/vibe-coding-risk-radar/tree/
     ],
     mitigations: [
       {
-        tier: 1, title: "Automated Gates (always active)", icon: "⚙️",
+        tier: 1,
+        title: "Automated Gates (always active)",
+        icon: "⚙️",
         measures: [
-          { name: "Linter & Formatter", desc: "ESLint, Prettier, Ruff — instant feedback, zero effort", type: "deterministic" },
-          { name: "Type Checking", desc: "TypeScript strict, mypy — entire error classes eliminated", type: "deterministic" },
-          { name: "Pre-Commit Hooks", desc: "Secrets scanning (GitGuardian), lint, format before every commit", type: "deterministic" },
-          { name: "Dependency Check", desc: "npm audit, pip-audit — block known CVEs in dependencies", type: "deterministic" },
-          { name: "CI Build & Unit Tests", desc: "Green build as merge requirement — catches regressions", type: "deterministic" },
+          {
+            name: "Linter & Formatter",
+            desc: "ESLint, Prettier, Ruff — instant feedback, zero effort",
+            type: "deterministic",
+          },
+          {
+            name: "Type Checking",
+            desc: "TypeScript strict, mypy — entire error classes eliminated",
+            type: "deterministic",
+          },
+          {
+            name: "Pre-Commit Hooks",
+            desc: "Secrets scanning (GitGuardian), lint, format before every commit",
+            type: "deterministic",
+          },
+          {
+            name: "Dependency Check",
+            desc: "npm audit, pip-audit — block known CVEs in dependencies",
+            type: "deterministic",
+          },
+          {
+            name: "CI Build & Unit Tests",
+            desc: "Green build as merge requirement — catches regressions",
+            type: "deterministic",
+          },
         ],
       },
       {
-        tier: 2, title: "Extended Assurance", icon: "🔍",
+        tier: 2,
+        title: "Extended Assurance",
+        icon: "🔍",
         measures: [
-          { name: "SAST (Semgrep, CodeQL)", desc: "Static analysis for vulnerability patterns — as CI gate", type: "deterministic" },
-          { name: "AI Code Review", desc: "CodeRabbit, Copilot Review — independent from generating LLM", type: "probabilistic" },
-          { name: "Property-Based Tests", desc: "Hypothesis, fast-check — 81% bug detection on edge cases", type: "probabilistic" },
-          { name: "SonarQube Quality Gate", desc: "Coverage ≥70%, 0 critical vulns, 0 blockers as merge gate", type: "deterministic" },
-          { name: "Sampling Review", desc: "Human reviews ~20% of PRs (rotating, risk-weighted)", type: "organizational" },
+          {
+            name: "SAST (Semgrep, CodeQL)",
+            desc: "Static analysis for vulnerability patterns — as CI gate",
+            type: "deterministic",
+          },
+          {
+            name: "AI Code Review",
+            desc: "CodeRabbit, Copilot Review — independent from generating LLM",
+            type: "probabilistic",
+          },
+          {
+            name: "Property-Based Tests",
+            desc: "Hypothesis, fast-check — 81% bug detection on edge cases",
+            type: "probabilistic",
+          },
+          {
+            name: "SonarQube Quality Gate",
+            desc: "Coverage ≥70%, 0 critical vulns, 0 blockers as merge gate",
+            type: "deterministic",
+          },
+          {
+            name: "Sampling Review",
+            desc: "Human reviews ~20% of PRs (rotating, risk-weighted)",
+            type: "organizational",
+          },
         ],
       },
       {
-        tier: 3, title: "Mandatory Measures for High Risk", icon: "🛡️",
+        tier: 3,
+        title: "Mandatory Measures for High Risk",
+        icon: "🛡️",
         measures: [
-          { name: "Mandatory Human Review", desc: "Every PR touching auth/PII/payment reviewed by senior engineer", type: "organizational" },
-          { name: "Sandbox / Isolation", desc: "Firecracker microVM, Deno Sandbox — containment on exploit", type: "deterministic" },
-          { name: "Fuzzing", desc: "Fuzz4All, AFL++ — finds crashes and vulns via random inputs", type: "probabilistic" },
-          { name: "Penetration Testing", desc: "Regular security audits on auth flows and API endpoints", type: "organizational" },
-          { name: "Canary Deployments", desc: "Gradual rollout with automatic rollback on anomalies", type: "deterministic" },
-          { name: "PromptBOM / Provenance", desc: "Document: which model, which prompt, who approved", type: "organizational" },
+          {
+            name: "Mandatory Human Review",
+            desc: "Every PR touching auth/PII/payment reviewed by senior engineer",
+            type: "organizational",
+          },
+          {
+            name: "Sandbox / Isolation",
+            desc: "Firecracker microVM, Deno Sandbox — containment on exploit",
+            type: "deterministic",
+          },
+          {
+            name: "Fuzzing",
+            desc: "Fuzz4All, AFL++ — finds crashes and vulns via random inputs",
+            type: "probabilistic",
+          },
+          {
+            name: "Penetration Testing",
+            desc: "Regular security audits on auth flows and API endpoints",
+            type: "organizational",
+          },
+          {
+            name: "Canary Deployments",
+            desc: "Gradual rollout with automatic rollback on anomalies",
+            type: "deterministic",
+          },
+          {
+            name: "PromptBOM / Provenance",
+            desc: "Document: which model, which prompt, who approved",
+            type: "organizational",
+          },
         ],
       },
       {
-        tier: 4, title: "Critical — Severely Restrict AI Use", icon: "🚨",
+        tier: 4,
+        title: "Critical — Severely Restrict AI Use",
+        icon: "🚨",
         measures: [
-          { name: "Formal Verification", desc: "Dafny, TLA+, SPARK — mathematical proof of correctness", type: "deterministic" },
-          { name: "Independent Re-Verification", desc: "Separate team verifies output — per DO-178C DAL A", type: "organizational" },
-          { name: "MC/DC Test Coverage", desc: "Modified Condition/Decision Coverage — required at DAL A/B", type: "deterministic" },
-          { name: "Contract-Based Design", desc: "Pre/postconditions + invariants — spec first, then generation", type: "deterministic" },
-          { name: "Certification Process", desc: "IEC 61508, DO-178C, ISO 26262 compliance — no shortcut", type: "organizational" },
-          { name: "AI as Draft Aid Only", desc: "LLM generates proposal, human implements and verifies", type: "organizational" },
+          {
+            name: "Formal Verification",
+            desc: "Dafny, TLA+, SPARK — mathematical proof of correctness",
+            type: "deterministic",
+          },
+          {
+            name: "Independent Re-Verification",
+            desc: "Separate team verifies output — per DO-178C DAL A",
+            type: "organizational",
+          },
+          {
+            name: "MC/DC Test Coverage",
+            desc: "Modified Condition/Decision Coverage — required at DAL A/B",
+            type: "deterministic",
+          },
+          {
+            name: "Contract-Based Design",
+            desc: "Pre/postconditions + invariants — spec first, then generation",
+            type: "deterministic",
+          },
+          {
+            name: "Certification Process",
+            desc: "IEC 61508, DO-178C, ISO 26262 compliance — no shortcut",
+            type: "organizational",
+          },
+          {
+            name: "AI as Draft Aid Only",
+            desc: "LLM generates proposal, human implements and verifies",
+            type: "organizational",
+          },
         ],
       },
     ],
@@ -408,9 +680,9 @@ This framework provides a https://github.com/LLM-Coding/Semantic-Anchors?tab=rea
           title: "Claude Code Skills",
           content: `This framework provides two https://code.claude.com/docs/en/skills[Claude Code Skills] that work directly in your project:
 
-*\/risk-assess* — Automatically analyzes your repository, detects modules (monorepo, frontend/backend, etc.), scans code patterns, and asks targeted questions for dimensions that can't be auto-detected. Writes a structured risk assessment per module to your \`CLAUDE.md\`.
+*/risk-assess* — Automatically analyzes your repository, detects modules (monorepo, frontend/backend, etc.), scans code patterns, and asks targeted questions for dimensions that can't be auto-detected. Writes a structured risk assessment per module to your \`CLAUDE.md\`.
 
-*\/risk-mitigate* — Reads the risk assessment from \`CLAUDE.md\`, detects already-present measures (linter, CI, SAST, etc.), and helps implement missing mitigations step by step — from tool installation to CI configuration.
+*/risk-mitigate* — Reads the risk assessment from \`CLAUDE.md\`, detects already-present measures (linter, CI, SAST, etc.), and helps implement missing mitigations step by step — from tool installation to CI configuration.
 
 *Installation — Plugin (recommended):*
 

@@ -14,7 +14,7 @@ export default function RiskRadar() {
     if (saved === "de" || saved === "en") return saved;
     return detectBrowserLanguage();
   });
-  const { theme, setTheme, isDark } = useTheme();
+  const { setTheme, isDark } = useTheme();
   const [docsOpen, setDocsOpen] = useState(false);
   const [values, setValues] = useState({ codeType: 0, language: 1, deployment: 0, data: 0, blastRadius: 0 });
   const t = T[lang];
@@ -43,7 +43,11 @@ export default function RiskRadar() {
         <button
           onClick={() => setDocsOpen(!docsOpen)}
           className={styles.btn}
-          style={{ background: docsOpen ? `${tc}22` : undefined, border: `1px solid ${docsOpen ? tc : "var(--border)"}`, color: docsOpen ? "var(--text-heading)" : undefined }}
+          style={{
+            background: docsOpen ? `${tc}22` : undefined,
+            border: `1px solid ${docsOpen ? tc : "var(--border)"}`,
+            color: docsOpen ? "var(--text-heading)" : undefined,
+          }}
         >
           {docsOpen ? t.closeButton : t.docsButton}
         </button>
@@ -75,13 +79,19 @@ export default function RiskRadar() {
       </div>
 
       <div className={styles.mainContent}>
-        <div className={styles.chartWrapper}><RadarChart values={values} dimensions={t.dimensions} /></div>
+        <div className={styles.chartWrapper}>
+          <RadarChart values={values} dimensions={t.dimensions} />
+        </div>
 
         {/* Tier badge */}
         <div className={styles.tierBadge} style={{ background: `${tc}18`, border: `2px solid ${tc}` }}>
-          <span className={styles.tierNumber} style={{ color: tc }}>{ti + 1}</span>
+          <span className={styles.tierNumber} style={{ color: tc }}>
+            {ti + 1}
+          </span>
           <div>
-            <div className={styles.tierLabel} style={{ color: tc }}>{tier.label}</div>
+            <div className={styles.tierLabel} style={{ color: tc }}>
+              {tier.label}
+            </div>
             <div className={styles.tierDesc}>{tier.desc}</div>
           </div>
         </div>
@@ -95,11 +105,23 @@ export default function RiskRadar() {
               <div key={dim.key} className={styles.sliderGroup}>
                 <div className={styles.sliderHeader}>
                   <span className={styles.sliderLabel}>{dim.label}</span>
-                  <span className={styles.sliderLevel} style={{ color: sc }}>{dim.levels[v]}</span>
+                  <span className={styles.sliderLevel} style={{ color: sc }}>
+                    {dim.levels[v]}
+                  </span>
                 </div>
-                <input type="range" min={0} max={4} step={1} value={v} onChange={(e) => set(dim.key, parseInt(e.target.value))} className={styles.slider} style={{ accentColor: sc }} />
+                <input
+                  type="range"
+                  min={0}
+                  max={4}
+                  step={1}
+                  value={v}
+                  onChange={(e) => set(dim.key, parseInt(e.target.value))}
+                  className={styles.slider}
+                  style={{ accentColor: sc }}
+                />
                 <div className={styles.sliderRange}>
-                  <span>{t.low}</span><span>{t.high}</span>
+                  <span>{t.low}</span>
+                  <span>{t.high}</span>
                 </div>
               </div>
             );
@@ -110,7 +132,9 @@ export default function RiskRadar() {
         <div className={styles.mitigations}>
           <div className={styles.mitigationHeader}>
             <h2 className={styles.mitigationTitle}>{t.mitigationHeading}</h2>
-            <span className={styles.mitigationCount}>{activeCount} {t.active}</span>
+            <span className={styles.mitigationCount}>
+              {activeCount} {t.active}
+            </span>
           </div>
           <div className={styles.legend}>
             {Object.entries(TYPE_COLORS).map(([key, c]) => (
@@ -121,20 +145,66 @@ export default function RiskRadar() {
             ))}
           </div>
           <div className={styles.cumulativeNote} style={{ borderLeft: `3px solid ${tc}` }}>
-            <strong className={styles.cumulativeStrong}>{t.cumulative}:</strong> {t.cumulativeNote(ti, t.mitigations[ti].title)}
+            <strong className={styles.cumulativeStrong}>{t.cumulative}:</strong>{" "}
+            {t.cumulativeNote(ti, t.mitigations[ti].title)}
           </div>
           <div className={styles.cardList}>
-            {t.mitigations.map((g) => <MitigationCard key={g.tier} group={g} active={g.tier <= ti + 1} accent={TIER_BG[g.tier - 1]} t={t} />)}
+            {t.mitigations.map((g) => (
+              <MitigationCard key={g.tier} group={g} active={g.tier <= ti + 1} accent={TIER_BG[g.tier - 1]} t={t} />
+            ))}
           </div>
         </div>
 
         <div className={styles.footer}>
-          <div>v{VERSION} · <a href="https://github.com/LLM-Coding/vibe-coding-risk-radar" target="_blank" rel="noopener" className={styles.footerLink}>{t.footer.github}</a> · <a href={`docs/risk-radar${lang === "en" ? "-en" : ""}.html`} target="_blank" rel="noopener" className={styles.footerLink}>{t.footer.fullDocs}</a> · <a href={`https://github.com/LLM-Coding/vibe-coding-risk-radar/issues/new?title=${encodeURIComponent(t.footer.feedbackTitle)}&body=${encodeURIComponent(t.footer.feedbackBody)}`} target="_blank" rel="noopener" className={styles.footerLink}>{t.footer.feedback}</a></div>
-          <div>{t.footer.madeBy} <a href="https://www.linkedin.com/in/rdmueller" target="_blank" rel="noopener" className={styles.footerLink}>Ralf D. Müller</a></div>
+          <div>
+            v{VERSION} ·{" "}
+            <a
+              href="https://github.com/LLM-Coding/vibe-coding-risk-radar"
+              target="_blank"
+              rel="noopener"
+              className={styles.footerLink}
+            >
+              {t.footer.github}
+            </a>{" "}
+            ·{" "}
+            <a
+              href={`docs/risk-radar${lang === "en" ? "-en" : ""}.html`}
+              target="_blank"
+              rel="noopener"
+              className={styles.footerLink}
+            >
+              {t.footer.fullDocs}
+            </a>{" "}
+            ·{" "}
+            <a
+              href={`https://github.com/LLM-Coding/vibe-coding-risk-radar/issues/new?title=${encodeURIComponent(t.footer.feedbackTitle)}&body=${encodeURIComponent(t.footer.feedbackBody)}`}
+              target="_blank"
+              rel="noopener"
+              className={styles.footerLink}
+            >
+              {t.footer.feedback}
+            </a>
+          </div>
+          <div>
+            {t.footer.madeBy}{" "}
+            <a
+              href="https://www.linkedin.com/in/rdmueller"
+              target="_blank"
+              rel="noopener"
+              className={styles.footerLink}
+            >
+              Ralf D. Müller
+            </a>
+          </div>
         </div>
       </div>
 
-      <a href={`https://github.com/LLM-Coding/vibe-coding-risk-radar/issues/new?title=${encodeURIComponent(t.footer.feedbackTitle)}&body=${encodeURIComponent(t.footer.feedbackBody)}`} target="_blank" rel="noopener" className={styles.fab}>
+      <a
+        href={`https://github.com/LLM-Coding/vibe-coding-risk-radar/issues/new?title=${encodeURIComponent(t.footer.feedbackTitle)}&body=${encodeURIComponent(t.footer.feedbackBody)}`}
+        target="_blank"
+        rel="noopener"
+        className={styles.fab}
+      >
         <span className={styles.fabIcon}>💬</span> {t.footer.feedback}
       </a>
 

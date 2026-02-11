@@ -14,7 +14,9 @@ const ADOC_SIDEBAR_STYLES = `
 
 export default function DocSidebar({ docs, open, onClose }) {
   const ref = useRef(null);
-  useEffect(() => { if (open && ref.current) ref.current.scrollTop = 0; }, [open]);
+  useEffect(() => {
+    if (open && ref.current) ref.current.scrollTop = 0;
+  }, [open]);
   useEffect(() => {
     if (open && ref.current) {
       ref.current.querySelectorAll(".adoc-content a").forEach((a) => {
@@ -24,35 +26,33 @@ export default function DocSidebar({ docs, open, onClose }) {
     }
   });
 
-  const rendered = useMemo(() =>
-    docs.sections.map((sec) => ({
-      ...sec,
-      html: adoc.convert(sec.content, { safe: "safe", attributes: { showtitle: false } }),
-    })),
-    [docs.sections]
+  const rendered = useMemo(
+    () =>
+      docs.sections.map((sec) => ({
+        ...sec,
+        html: adoc.convert(sec.content, { safe: "safe", attributes: { showtitle: false } }),
+      })),
+    [docs.sections],
   );
 
   return (
-    <div
-      ref={ref}
-      className={`${styles.sidebar} ${open ? styles.sidebarOpen : styles.sidebarClosed}`}
-    >
+    <div ref={ref} className={`${styles.sidebar} ${open ? styles.sidebarOpen : styles.sidebarClosed}`}>
       {open && (
         <div className={styles.content}>
           <style>{ADOC_SIDEBAR_STYLES}</style>
           <div className={styles.headerRow}>
             <h2 className={styles.title}>{docs.title}</h2>
-            <button onClick={onClose} className={styles.closeBtn}>✕</button>
+            <button onClick={onClose} className={styles.closeBtn}>
+              ✕
+            </button>
           </div>
           {rendered.map((sec) => (
             <div key={sec.id} className={`${styles.section} ${sec.id === "disclaimer" ? styles.disclaimer : ""}`}>
               <h3 className={sec.id === "disclaimer" ? styles.disclaimerTitle : styles.sectionTitle}>
-                {sec.id === "disclaimer" ? "\u26A0\uFE0F " : ""}{sec.title}
+                {sec.id === "disclaimer" ? "\u26A0\uFE0F " : ""}
+                {sec.title}
               </h3>
-              <div
-                className={`adoc-content ${styles.adocBody}`}
-                dangerouslySetInnerHTML={{ __html: sec.html }}
-              />
+              <div className={`adoc-content ${styles.adocBody}`} dangerouslySetInnerHTML={{ __html: sec.html }} />
             </div>
           ))}
           <div className={styles.footer}>
