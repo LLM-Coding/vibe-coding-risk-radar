@@ -20,10 +20,13 @@ This is a single-page React app (React 18, Vite 6) that visualizes a MECE risk f
 
 ### Core Structure
 
-- **`src/RiskRadar.jsx`** — All React components (~258 lines):
-  - **Risk model**: 5 dimensions (codeType, language, deployment, data, blastRadius), each scored 0–4. The tier is determined by `Math.max()` across all dimensions, mapped to 4 tiers.
-  - **Components** (not exported, all in the same file): `RadarChart` (SVG polygon radar), `MitigationCard` (expandable tier cards), `DocSidebar` (slide-out documentation panel using asciidoctor.js), and the default export `RiskRadar`.
-  - **Styling**: All inline styles, no CSS modules or styled-components. Dark theme with slate color palette. Colors defined via `TIER_BG` and `TYPE_COLORS` constants.
+- **`src/constants.js`** — Shared constants: `VERSION`, `TIER_BG` (tier colors), `TYPE_COLORS` (measure type colors).
+- **`src/utils.js`** — Pure utility functions: `getTierIndex`, `polarToCartesian`, `detectBrowserLanguage`.
+- **`src/components/RiskRadar.jsx`** + `.module.css` — Main app component. Risk model: 5 dimensions (codeType, language, deployment, data, blastRadius), each scored 0–4. Tier = `Math.max()` across all dimensions, mapped to 4 tiers.
+- **`src/components/RadarChart.jsx`** + `.module.css` — SVG polygon radar chart.
+- **`src/components/MitigationCard.jsx`** + `.module.css` — Expandable tier cards showing mitigation measures.
+- **`src/components/DocSidebar.jsx`** + `.module.css` — Slide-out documentation panel using asciidoctor.js.
+- **Styling**: CSS Modules for static layout/typography, inline styles only for dynamic/JS-dependent values (tier colors, active states). Theme via CSS custom properties in `src/theme.js`.
 
 - **`src/i18n.js`** — Full DE/EN translations (~353 lines): dimension definitions, preset scenarios, mitigation measures, and documentation content with AsciiDoc markup and hyperlinked references.
 
