@@ -2,25 +2,8 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import Asciidoctor from "@asciidoctor/core";
 import T from "./i18n.js";
 import { useTheme } from "./theme.js";
-
-const VERSION = "1.4.0";
-
-const TIER_BG = ["#10b981", "#f59e0b", "#f97316", "#ef4444"];
-const TYPE_COLORS = {
-  deterministic: { color: "#38bdf8", bg: "#0c4a6e" },
-  probabilistic: { color: "#a78bfa", bg: "#3b0764" },
-  organizational: { color: "#fb923c", bg: "#7c2d12" },
-};
-
-function getTierIndex(values) {
-  const mx = Math.max(...Object.values(values));
-  return mx <= 1 ? 0 : mx <= 2 ? 1 : mx <= 3 ? 2 : 3;
-}
-
-function polarToCartesian(cx, cy, r, angleDeg) {
-  const rad = ((angleDeg - 90) * Math.PI) / 180;
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-}
+import { VERSION, TIER_BG, TYPE_COLORS } from "./constants.js";
+import { getTierIndex, polarToCartesian, detectBrowserLanguage } from "./utils.js";
 
 function RadarChart({ values, dimensions, size = 320 }) {
   const cx = size / 2, cy = size / 2, maxR = size / 2 - 48, levels = 5, n = dimensions.length, step = 360 / n;
@@ -163,11 +146,6 @@ function DocSidebar({ docs, open, onClose }) {
       )}
     </div>
   );
-}
-
-function detectBrowserLanguage() {
-  const nav = navigator.language || navigator.userLanguage || "";
-  return nav.startsWith("de") ? "de" : "en";
 }
 
 export default function RiskRadar() {
