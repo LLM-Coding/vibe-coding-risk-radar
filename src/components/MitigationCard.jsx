@@ -20,8 +20,12 @@ export default function MitigationCard({ group, active, accent, t }) {
         <div className={styles.headerInfo}>
           <span className={styles.icon}>{group.icon}</span>
           <div>
-            <div className={styles.title} style={{ color: active ? "var(--text-heading)" : "var(--text-secondary)" }}>{group.title}</div>
-            <div className={styles.subtitle}>{group.measures.length} {group.measures.length !== 1 ? t.measures : t.measure}</div>
+            <div className={styles.title} style={{ color: active ? "var(--text-heading)" : "var(--text-secondary)" }}>
+              {group.title}
+            </div>
+            <div className={styles.subtitle}>
+              {group.measures.length} {group.measures.length !== 1 ? t.measures : t.measure}
+            </div>
           </div>
         </div>
         {active && <span className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`}>▾</span>}
