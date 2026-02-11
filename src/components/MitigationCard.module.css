@@ -1,0 +1,88 @@
+.card {
+  border-radius: 12px;
+  padding: 12px 14px;
+  transition: all 0.3s;
+}
+
+.cardInactive {
+  opacity: 0.5;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.chevron {
+  font-size: 22px;
+  color: var(--text-secondary);
+  transition: transform 0.2s;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.measures {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.measure {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.measureHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.measureName {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.typeBadge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.measureDesc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  line-height: 1.4;
+}

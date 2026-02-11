@@ -5,42 +5,7 @@ import { useTheme } from "./theme.js";
 import { VERSION, TIER_BG, TYPE_COLORS } from "./constants.js";
 import { getTierIndex, detectBrowserLanguage } from "./utils.js";
 import RadarChart from "./components/RadarChart.jsx";
-
-function MitigationCard({ group, active, accent, t }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div style={{ border: `2px solid ${active ? accent : "var(--border-subtle)"}`, borderRadius: 12, background: active ? `${accent}10` : "var(--bg-main)", padding: "12px 14px", opacity: active ? 1 : 0.5, transition: "all 0.3s" }}>
-      <div onClick={() => active && setOpen(!open)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: active ? "pointer" : "default" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 24 }}>{group.icon}</span>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 18, color: active ? "var(--text-heading)" : "var(--text-secondary)" }}>{group.title}</div>
-            <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{group.measures.length} {group.measures.length !== 1 ? t.measures : t.measure}</div>
-          </div>
-        </div>
-        {active && <span style={{ fontSize: 22, color: "var(--text-secondary)", transform: open ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>▾</span>}
-      </div>
-      {active && open && (
-        <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
-          {group.measures.map((m, i) => {
-            const tc = TYPE_COLORS[m.type];
-            return (
-              <div key={i} style={{ background: "var(--bg-card)", borderRadius: 8, padding: "8px 10px", borderLeft: `3px solid ${tc.color}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                  <span style={{ fontWeight: 600, fontSize: 16, color: "var(--text-primary)" }}>{m.name}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: tc.color, background: tc.bg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                    {t.typeBadges[m.type]}
-                  </span>
-                </div>
-                <div style={{ fontSize: 15, color: "var(--text-secondary)", marginTop: 3, lineHeight: 1.4 }}>{m.desc}</div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
+import MitigationCard from "./components/MitigationCard.jsx";
 
 const adoc = Asciidoctor();
 
