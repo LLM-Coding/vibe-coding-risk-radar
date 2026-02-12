@@ -10,6 +10,16 @@ const ADOC_SIDEBAR_STYLES = `
   .adoc-content a:hover { text-decoration-color: var(--link); }
   .adoc-content strong { color: var(--text-primary); }
   .adoc-content code { background: var(--bg-card); padding: 1px 4px; border-radius: 3px; font-size: 0.92em; }
+  .adr-admonition {
+    background: var(--bg-card);
+    border: 1px solid #f59e0b;
+    border-left: 4px solid #f59e0b;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 16px 0;
+  }
+  .adr-admonition p:first-child { margin-top: 0; }
+  .adr-admonition p:last-child { margin-bottom: 0; }
 `;
 
 export default function DocSidebar({ docs, open, onClose }) {
