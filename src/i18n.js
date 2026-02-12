@@ -333,17 +333,14 @@ Dieses Framework bietet eine https://github.com/LLM-Coding/Semantic-Anchors?tab=
 
 */risk-mitigate* — Liest die Risikobewertung aus \`CLAUDE.md\`, erkennt bereits vorhandene Maßnahmen (Linter, CI, SAST etc.) und hilft fehlende Mitigations Schritt für Schritt umzusetzen — von Tool-Installation bis CI-Konfiguration.
 
-+++<div class="adr-admonition">+++
-
-*⚠️ Risk-Assessments sind Architekturentscheidungen*
-
-Tier-Klassifizierungen und Mitigation-Strategien sollten als https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions[Architecture Decision Records (ADR nach Nygard)] dokumentiert werden.
-
-\`/risk-assess\` bietet automatische ADR-Generierung an (optional). Der ADR wird in \`docs/adr/\` gespeichert und — falls vorhanden — in arc42 Kapitel 9 referenziert. \`/risk-mitigate\` aktualisiert den ADR mit dem Umsetzungsstatus der Maßnahmen.
-
-*Warum ADRs?* Transparenz (warum wurde Tier X gewählt?), Nachvollziehbarkeit (wer hat wann entschieden?), Reviewbarkeit (Team kann vor Umsetzung diskutieren).
-
-+++</div>+++
+++++
+<div class="adr-admonition">
+<p><strong>⚠️ Risk-Assessments sind Architekturentscheidungen</strong></p>
+<p>Tier-Klassifizierungen und Mitigation-Strategien sollten als <a href="https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions" target="_blank" rel="noopener">Architecture Decision Records (ADR nach Nygard)</a> dokumentiert werden.</p>
+<p><code>/risk-assess</code> bietet automatische ADR-Generierung an (optional). Der ADR wird in <code>docs/adr/</code> gespeichert und — falls vorhanden — in arc42 Kapitel 9 referenziert. <code>/risk-mitigate</code> aktualisiert den ADR mit dem Umsetzungsstatus der Maßnahmen.</p>
+<p><strong>Warum ADRs?</strong> Transparenz (warum wurde Tier X gewählt?), Nachvollziehbarkeit (wer hat wann entschieden?), Reviewbarkeit (Team kann vor Umsetzung diskutieren).</p>
+</div>
+++++
 
 *Installation — Plugin (empfohlen):*
 
@@ -696,17 +693,14 @@ This framework provides a https://github.com/LLM-Coding/Semantic-Anchors?tab=rea
 
 */risk-mitigate* — Reads the risk assessment from \`CLAUDE.md\`, detects already-present measures (linter, CI, SAST, etc.), and helps implement missing mitigations step by step — from tool installation to CI configuration.
 
-+++<div class="adr-admonition">+++
-
-*⚠️ Risk Assessments are Architectural Decisions*
-
-Tier classifications and mitigation strategies should be documented as https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions[Architecture Decision Records (ADR nach Nygard)].
-
-\`/risk-assess\` offers automatic ADR generation (optional). The ADR is saved to \`docs/adr/\` and — if present — referenced in arc42 chapter 9. \`/risk-mitigate\` updates the ADR with mitigation implementation status.
-
-*Why ADRs?* Transparency (why was Tier X chosen?), traceability (who decided when?), reviewability (team can discuss before implementation).
-
-+++</div>+++
+++++
+<div class="adr-admonition">
+<p><strong>⚠️ Risk Assessments are Architectural Decisions</strong></p>
+<p>Tier classifications and mitigation strategies should be documented as <a href="https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions" target="_blank" rel="noopener">Architecture Decision Records (ADR nach Nygard)</a>.</p>
+<p><code>/risk-assess</code> offers automatic ADR generation (optional). The ADR is saved to <code>docs/adr/</code> and — if present — referenced in arc42 chapter 9. <code>/risk-mitigate</code> updates the ADR with mitigation implementation status.</p>
+<p><strong>Why ADRs?</strong> Transparency (why was Tier X chosen?), traceability (who decided when?), reviewability (team can discuss before implementation).</p>
+</div>
+++++
 
 *Installation — Plugin (recommended):*
 
