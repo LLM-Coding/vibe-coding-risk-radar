@@ -47,40 +47,41 @@ Use the **Detection signals** tables in `.claude/skills/shared/risk-model.md` (o
 
 **Tier 1 checks:**
 
-| Measure | What to check |
-|---------|---------------|
-| Linter | Files: `.eslintrc*`, `eslint.config.*`, `ruff.toml`, `.pylintrc`. Scripts: `lint` in package.json |
-| Formatter | Files: `.prettierrc*`, `rustfmt.toml`. Config: `black` or `ruff.format` in pyproject.toml |
-| Type Checking | `tsconfig.json` with `"strict": true`. Python: `mypy.ini` or `[tool.mypy]` in pyproject.toml |
-| Pre-Commit Hooks | Dirs: `.husky/`. Files: `.pre-commit-config.yaml`. Config: `lint-staged` in package.json |
-| Dependency Check | `audit` step in CI workflows. Python: `pip-audit` or `safety` in dependencies |
-| CI/CD | Dirs: `.github/workflows/`. Files: `Jenkinsfile`, `.gitlab-ci.yml` |
+| Measure          | What to check                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------- |
+| Linter           | Files: `.eslintrc*`, `eslint.config.*`, `ruff.toml`, `.pylintrc`. Scripts: `lint` in package.json |
+| Formatter        | Files: `.prettierrc*`, `rustfmt.toml`. Config: `black` or `ruff.format` in pyproject.toml         |
+| Type Checking    | `tsconfig.json` with `"strict": true`. Python: `mypy.ini` or `[tool.mypy]` in pyproject.toml      |
+| Pre-Commit Hooks | Dirs: `.husky/`. Files: `.pre-commit-config.yaml`. Config: `lint-staged` in package.json          |
+| Dependency Check | `audit` step in CI workflows. Python: `pip-audit` or `safety` in dependencies                     |
+| CI/CD            | Dirs: `.github/workflows/`. Files: `Jenkinsfile`, `.gitlab-ci.yml`                                |
 
 **Tier 2 checks:**
 
-| Measure | What to check |
-|---------|---------------|
-| SAST | `semgrep` or `codeql` in CI workflow files. Dir: `.semgrep/` |
-| AI Code Review | `coderabbit.yaml`, Copilot review in CI |
-| Property-Based Tests | `fast-check` or `hypothesis` in dependencies |
-| SonarQube | `sonar-project.properties`. Sonar step in CI |
+| Measure              | What to check                                                |
+| -------------------- | ------------------------------------------------------------ |
+| SAST                 | `semgrep` or `codeql` in CI workflow files. Dir: `.semgrep/` |
+| AI Code Review       | `coderabbit.yaml`, Copilot review in CI                      |
+| Property-Based Tests | `fast-check` or `hypothesis` in dependencies                 |
+| SonarQube            | `sonar-project.properties`. Sonar step in CI                 |
 
 **Tier 3 checks:**
 
-| Measure | What to check |
-|---------|---------------|
-| Branch Protection | Run: `gh api repos/{owner}/{repo}/branches/main/protection` (200 = enabled) |
-| Fuzzing | Dir: `fuzz/`. Deps: `cargo-fuzz`, AFL config files |
-| Canary/Gradual Deploy | Check CI for canary or blue-green deployment steps |
+| Measure               | What to check                                                               |
+| --------------------- | --------------------------------------------------------------------------- |
+| Branch Protection     | Run: `gh api repos/{owner}/{repo}/branches/main/protection` (200 = enabled) |
+| Fuzzing               | Dir: `fuzz/`. Deps: `cargo-fuzz`, AFL config files                          |
+| Canary/Gradual Deploy | Check CI for canary or blue-green deployment steps                          |
 
 **Tier 4 checks:**
 
-| Measure | What to check |
-|---------|---------------|
+| Measure             | What to check                                             |
+| ------------------- | --------------------------------------------------------- |
 | Formal Verification | Files: `*.dfy` (Dafny), `*.tla` (TLA+), SPARK annotations |
-| MC/DC Coverage | Coverage config requiring MC/DC |
+| MC/DC Coverage      | Coverage config requiring MC/DC                           |
 
 For each check, record the result as:
+
 - **Present** — config file or tool found and appears correctly configured
 - **Missing** — no config found
 - **Partial** — config exists but incomplete (e.g., linter config but no CI integration)
@@ -109,6 +110,7 @@ For each module, show a gap analysis table grouped by tier (cumulative up to the
 ```
 
 After the table, summarize:
+
 - Total measures required for this tier: X
 - Already present: Y
 - Missing: Z
@@ -128,16 +130,17 @@ For each missing measure:
 
 ### Tier 1 — Install and configure directly
 
-| Measure | JS/TS Project | Python Project |
-|---------|---------------|----------------|
-| Linter | `npm install -D eslint`, create `eslint.config.js` with recommended rules | `pip install ruff`, create `ruff.toml` |
-| Formatter | `npm install -D prettier`, create `.prettierrc` | Add `[tool.ruff.format]` to pyproject.toml or `pip install black` |
-| Type Checking | Ensure `tsconfig.json` has `"strict": true` | `pip install mypy`, create `mypy.ini` or add `[tool.mypy]` to pyproject.toml |
-| Pre-Commit | `npm install -D husky lint-staged`, `npx husky init`, configure lint-staged in package.json | `pip install pre-commit`, create `.pre-commit-config.yaml` |
-| Dependency Check | Add `npm audit` step to CI workflow | Add `pip-audit` step to CI workflow |
-| CI Build & Tests | Create `.github/workflows/ci.yml` with install, lint, build, test steps | Create `.github/workflows/ci.yml` with install, lint, test steps |
+| Measure          | JS/TS Project                                                                               | Python Project                                                               |
+| ---------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Linter           | `npm install -D eslint`, create `eslint.config.js` with recommended rules                   | `pip install ruff`, create `ruff.toml`                                       |
+| Formatter        | `npm install -D prettier`, create `.prettierrc`                                             | Add `[tool.ruff.format]` to pyproject.toml or `pip install black`            |
+| Type Checking    | Ensure `tsconfig.json` has `"strict": true`                                                 | `pip install mypy`, create `mypy.ini` or add `[tool.mypy]` to pyproject.toml |
+| Pre-Commit       | `npm install -D husky lint-staged`, `npx husky init`, configure lint-staged in package.json | `pip install pre-commit`, create `.pre-commit-config.yaml`                   |
+| Dependency Check | Add `npm audit` step to CI workflow                                                         | Add `pip-audit` step to CI workflow                                          |
+| CI Build & Tests | Create `.github/workflows/ci.yml` with install, lint, build, test steps                     | Create `.github/workflows/ci.yml` with install, lint, test steps             |
 
 After installing, **verify** the tool works:
+
 - Run the linter and confirm it executes without config errors
 - Run the formatter in check mode
 - Run the type checker
@@ -145,35 +148,35 @@ After installing, **verify** the tool works:
 
 ### Tier 2 — Install where possible, suggest for others
 
-| Measure | Action |
-|---------|--------|
-| SAST (Semgrep) | Create `.github/workflows/semgrep.yml` with Semgrep CI action. Or add CodeQL workflow |
-| AI Code Review | Suggest enabling CodeRabbit or Copilot review. Provide setup link |
-| Property-Based Tests | JS/TS: `npm install -D fast-check`. Python: `pip install hypothesis`. Create one example test file |
-| SonarQube | Create `sonar-project.properties`, add SonarCloud step to CI. Requires user to set up project in SonarCloud |
-| Sampling Review | Suggest CODEOWNERS file and PR review policy. Provide template |
+| Measure              | Action                                                                                                      |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| SAST (Semgrep)       | Create `.github/workflows/semgrep.yml` with Semgrep CI action. Or add CodeQL workflow                       |
+| AI Code Review       | Suggest enabling CodeRabbit or Copilot review. Provide setup link                                           |
+| Property-Based Tests | JS/TS: `npm install -D fast-check`. Python: `pip install hypothesis`. Create one example test file          |
+| SonarQube            | Create `sonar-project.properties`, add SonarCloud step to CI. Requires user to set up project in SonarCloud |
+| Sampling Review      | Suggest CODEOWNERS file and PR review policy. Provide template                                              |
 
 ### Tier 3 — Configure where possible, guide for others
 
-| Measure | Action |
-|---------|--------|
-| Branch Protection | Configure via `gh api -X PUT repos/{owner}/{repo}/branches/main/protection` with required reviews, status checks |
-| Sandbox/Isolation | Provide guidance for Docker-based isolation, Deno sandbox, or Firecracker setup |
-| Fuzzing | JS/TS: Suggest `jsfuzz` or custom property-based fuzzing. Rust: `cargo install cargo-fuzz`, create `fuzz/` dir. Provide starter template |
-| Penetration Testing | Provide a recommended schedule and checklist. Suggest tools: OWASP ZAP, Burp Suite |
-| Canary Deployments | Provide a workflow template for gradual rollout with auto-rollback |
-| PromptBOM/Provenance | Create a `PROMPTBOM.md` template documenting AI model, prompt, and approver for each module |
+| Measure              | Action                                                                                                                                   |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Branch Protection    | Configure via `gh api -X PUT repos/{owner}/{repo}/branches/main/protection` with required reviews, status checks                         |
+| Sandbox/Isolation    | Provide guidance for Docker-based isolation, Deno sandbox, or Firecracker setup                                                          |
+| Fuzzing              | JS/TS: Suggest `jsfuzz` or custom property-based fuzzing. Rust: `cargo install cargo-fuzz`, create `fuzz/` dir. Provide starter template |
+| Penetration Testing  | Provide a recommended schedule and checklist. Suggest tools: OWASP ZAP, Burp Suite                                                       |
+| Canary Deployments   | Provide a workflow template for gradual rollout with auto-rollback                                                                       |
+| PromptBOM/Provenance | Create a `PROMPTBOM.md` template documenting AI model, prompt, and approver for each module                                              |
 
 ### Tier 4 — Recommendations and checklists only
 
-| Measure | Action |
-|---------|--------|
-| Formal Verification | Recommend tools (Dafny, TLA+, SPARK) based on language. Provide getting-started links |
-| Independent Re-Verification | Provide a process checklist for independent review per DO-178C DAL A |
-| MC/DC Coverage | Recommend coverage tools and configuration for MC/DC. Provide setup guide |
-| Contract-Based Design | Suggest libraries: `ts-contract` (TS), `icontract` (Python), `contracts` (Rust). Show example |
-| Certification Process | Provide a checklist for relevant standard (IEC 61508, DO-178C, ISO 26262) |
-| AI as Draft Aid Only | Suggest a workflow policy document template restricting AI to proposal-only role |
+| Measure                     | Action                                                                                        |
+| --------------------------- | --------------------------------------------------------------------------------------------- |
+| Formal Verification         | Recommend tools (Dafny, TLA+, SPARK) based on language. Provide getting-started links         |
+| Independent Re-Verification | Provide a process checklist for independent review per DO-178C DAL A                          |
+| MC/DC Coverage              | Recommend coverage tools and configuration for MC/DC. Provide setup guide                     |
+| Contract-Based Design       | Suggest libraries: `ts-contract` (TS), `icontract` (Python), `contracts` (Rust). Show example |
+| Certification Process       | Provide a checklist for relevant standard (IEC 61508, DO-178C, ISO 26262)                     |
+| AI as Draft Aid Only        | Suggest a workflow policy document template restricting AI to proposal-only role              |
 
 ### After each installation
 
@@ -199,16 +202,17 @@ After completing implementations (or if the user stops partway through):
 
 _Updated by `/risk-mitigate` on YYYY-MM-DD_
 
-| Measure | Status | Details |
-|---------|--------|---------|
-| Linter & Formatter | Present | eslint.config.js, .prettierrc |
-| Type Checking | Set up | tsconfig.json strict enabled |
-| Pre-Commit Hooks | Set up | husky + lint-staged configured |
-| SAST | Pending | — |
-| Branch Protection | N/A | Not required for Tier 1 |
+| Measure            | Status  | Details                        |
+| ------------------ | ------- | ------------------------------ |
+| Linter & Formatter | Present | eslint.config.js, .prettierrc  |
+| Type Checking      | Set up  | tsconfig.json strict enabled   |
+| Pre-Commit Hooks   | Set up  | husky + lint-staged configured |
+| SAST               | Pending | —                              |
+| Branch Protection  | N/A     | Not required for Tier 1        |
 ```
 
 Status values:
+
 - **Present** — was already in place before running this skill
 - **Set up** — installed/configured during this session
 - **Pending** — required but not yet implemented (user deferred or manual action needed)
@@ -218,6 +222,53 @@ Status values:
    ```
    git add CLAUDE.md
    git commit -m "docs: update mitigation status in CLAUDE.md"
+   ```
+
+---
+
+## Step 6 — Update ADR (if exists)
+
+If an ADR was generated during `/risk-assess`, update it with mitigation status:
+
+1. **Check for ADR reference in CLAUDE.md**:
+   - Look for a line like `_Architecture Decision: See [ADR-NNN](docs/adr/NNN-risk-classification-*.md)_`
+   - Extract the ADR file path
+
+2. **If ADR exists, update it**:
+   - Read the current ADR file
+   - Add or replace a section at the end titled `## Implementation Status` (or `## Mitigations Implemented` if following strict Nygard format)
+   - Include the mitigation status table from CLAUDE.md
+   - Update the **Status** field at the top:
+     - If all required mitigations are now "Present" or "Set up" → change Status to `Accepted`
+     - If some are still "Pending" → keep Status as `Proposed`
+
+3. **Example addition to ADR**:
+
+   ```markdown
+   ## Implementation Status
+
+   _Updated by `/risk-mitigate` on YYYY-MM-DD_
+
+   | Measure            | Status     | Details                                     |
+   | ------------------ | ---------- | ------------------------------------------- |
+   | Linter & Formatter | ✅ Set up  | eslint.config.js, .prettierrc               |
+   | Pre-Commit Hooks   | ✅ Set up  | husky + lint-staged                         |
+   | SAST               | ⬜ Pending | CodeQL workflow created, awaiting first run |
+
+   **Overall Status:** 8/10 measures active → ADR Status updated to **Accepted**
+   ```
+
+4. **Update arc42 reference (if exists)**:
+   - If `docs/arc42/chapters/09_architecture_decisions.adoc` contains a reference to this ADR
+   - Update the status badge there as well:
+     ```asciidoc
+     **Status:** Accepted | **Date:** YYYY-MM-DD | **Tier:** {N} | **Mitigations:** 8/10 active
+     ```
+
+5. **Commit the ADR update**:
+   ```bash
+   git add docs/adr/NNN-*.md docs/arc42/ (if modified)
+   git commit -m "docs: update ADR with mitigation implementation status"
    ```
 
 ---

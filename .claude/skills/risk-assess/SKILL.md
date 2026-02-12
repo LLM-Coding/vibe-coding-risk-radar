@@ -24,15 +24,15 @@ Detect the modules (independently assessable units) in this repository.
 
 Look for these files in the repo root and parse the relevant field:
 
-| Config File | Field to Parse |
-|-------------|---------------|
-| `pnpm-workspace.yaml` | `packages:` array |
-| `package.json` (root) | `"workspaces"` field |
-| `lerna.json` | `"packages"` array |
-| `Cargo.toml` (root) | `[workspace] members` |
-| `settings.gradle` / `settings.gradle.kts` | `include(...)` calls |
-| `pom.xml` (root) | `<modules>` elements |
-| `go.work` | `use (...)` directives |
+| Config File                               | Field to Parse         |
+| ----------------------------------------- | ---------------------- |
+| `pnpm-workspace.yaml`                     | `packages:` array      |
+| `package.json` (root)                     | `"workspaces"` field   |
+| `lerna.json`                              | `"packages"` array     |
+| `Cargo.toml` (root)                       | `[workspace] members`  |
+| `settings.gradle` / `settings.gradle.kts` | `include(...)` calls   |
+| `pom.xml` (root)                          | `<modules>` elements   |
+| `go.work`                                 | `use (...)` directives |
 
 Resolve any glob patterns to actual directories.
 
@@ -81,6 +81,7 @@ score across all detected languages (weighted by file count — if only 1-2 file
 of a high-score language exist among hundreds of low-score files, note this).
 
 Report:
+
 ```
 Language scan for {module}:
   .ts/.tsx: 42 files (score 1)
@@ -94,6 +95,7 @@ Search for patterns in the shared risk model, starting from the highest score (4
 and working down. Stop at the first match level that has significant hits.
 
 Report each match with the file and line:
+
 ```
 Code Type scan for {module}:
   Auth/Security patterns (score 4):
@@ -110,6 +112,7 @@ Search for data sensitivity patterns from the shared risk model, starting from
 score 4 (PHI/PCI) down to score 2 (General PII).
 
 Report matches with evidence:
+
 ```
 Data Sensitivity scan for {module}:
   PHI/PCI patterns (score 4): no matches
@@ -124,6 +127,7 @@ Data Sensitivity scan for {module}:
 
 Search for deployment/regulatory patterns from the shared risk model.
 Also check for:
+
 - `Dockerfile`, `docker-compose.yml` — containerized deployment
 - `.github/workflows/`, `Jenkinsfile`, `.gitlab-ci.yml` — CI/CD presence
 - `kubernetes/`, `k8s/`, `helm/` — orchestrated deployment
@@ -134,6 +138,7 @@ Note findings but flag that user confirmation is required.
 ### 2e. Blast Radius Hints
 
 Blast radius is nearly impossible to auto-detect. Note any hints:
+
 - Number of downstream dependents (if library)
 - Presence of health/safety keywords
 - Scale indicators (load balancer configs, horizontal scaling)
@@ -210,6 +215,7 @@ Mapping: max <= 1 → Tier 1, max <= 2 → Tier 2, max <= 3 → Tier 3, max = 4 
 ```
 
 Present the result:
+
 ```
 {module} Risk Assessment:
   Code Type:        3 (API / DB Queries)
@@ -229,16 +235,63 @@ Check for config files and CI workflow steps that indicate existing mitigations.
 ### 4c. Check for Existing Assessment
 
 Before writing to CLAUDE.md:
+
 - Check if CLAUDE.md already contains a `## Risk Radar Assessment` section
 - If it does, ask the user: "CLAUDE.md already contains a risk assessment. Overwrite it?"
 - If the user declines, skip writing
 
-### 4d. Write to CLAUDE.md
+### 4d. ADR Generation (Tier 3+ only)
+
+If **any module** was assessed as **Tier 3 or higher**, offer to generate an Architecture Decision Record:
+
+```
+Tier 3 detected. Generate an Architecture Decision Record (ADR nach Nygard)?
+  [Y/n] — Recommended for Tier 3+ to document the risk classification decision.
+```
+
+If the user accepts:
+
+1. **Detect next ADR number**:
+   - Check if `docs/adr/` exists; if not, create it
+   - Find the highest existing ADR number (`docs/adr/NNN-*.md`)
+   - Use next number (zero-padded to 3 digits)
+
+2. **Write ADR nach Nygard** to `docs/adr/NNN-risk-classification-{project}.md`:
+   - **Title**: `# {NNN}. Risk Classification — {project/module}`
+   - **Date**: Current date (YYYY-MM-DD)
+   - **Status**: Proposed
+   - **Context**: Summary of dimension scores with reasoning for each module
+   - **Decision**: Tier classification result, determining dimension
+   - **Consequences**: Positive (security baseline), Negative (CI overhead, workflow changes)
+
+   Use "ADR nach Nygard" as the semantic anchor — no need for a custom template.
+   The LLM knows the format: Title, Status, Context, Decision, Consequences.
+
+3. **Arc42 integration** (if applicable):
+   - Check if `docs/arc42/` exists
+   - If yes, check if `docs/arc42/chapters/09_architecture_decisions.adoc` exists
+   - If yes, append a reference to the ADR:
+
+     ```asciidoc
+     === ADR-NNN: Risk Classification — {project}
+
+     See link:../../adr/NNN-risk-classification-{project}.md[ADR-NNN] for vibe-coding risk assessment.
+
+     **Status:** Proposed | **Date:** YYYY-MM-DD | **Tier:** {N}
+     ```
+
+4. **Reference in CLAUDE.md**:
+   - Add a line to the Risk Radar Assessment header:
+     ```markdown
+     _Architecture Decision: See [ADR-NNN](docs/adr/NNN-risk-classification-{project}.md)_
+     ```
+
+### 4e. Write to CLAUDE.md
 
 Use the exact output format from `.claude/skills/shared/risk-model.md` under
 "CLAUDE.md Output Format". Write:
 
-1. The assessment header with timestamp
+1. The assessment header with timestamp (and ADR reference if generated)
 2. Per-module dimension table with scores, levels, and evidence
 3. Tier result with determining dimension
 4. Per-module mitigation status table
