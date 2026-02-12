@@ -333,6 +333,17 @@ Dieses Framework bietet eine https://github.com/LLM-Coding/Semantic-Anchors?tab=
 
 */risk-mitigate* — Liest die Risikobewertung aus \`CLAUDE.md\`, erkennt bereits vorhandene Maßnahmen (Linter, CI, SAST etc.) und hilft fehlende Mitigations Schritt für Schritt umzusetzen — von Tool-Installation bis CI-Konfiguration.
 
+[IMPORTANT]
+====
+*Risk-Assessments sind Architekturentscheidungen*
+
+Tier-Klassifizierungen und Mitigation-Strategien sollten als https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions[Architecture Decision Records (ADR nach Nygard)] dokumentiert werden.
+
+\`/risk-assess\` bietet automatische ADR-Generierung an (optional). Der ADR wird in \`docs/adr/\` gespeichert und — falls vorhanden — in arc42 Kapitel 9 referenziert. \`/risk-mitigate\` aktualisiert den ADR mit dem Umsetzungsstatus der Maßnahmen.
+
+*Warum ADRs?* Transparenz (warum wurde Tier X gewählt?), Nachvollziehbarkeit (wer hat wann entschieden?), Reviewbarkeit (Team kann vor Umsetzung diskutieren).
+====
+
 *Installation — Plugin (empfohlen):*
 
 \`\`\`
@@ -683,6 +694,17 @@ This framework provides a https://github.com/LLM-Coding/Semantic-Anchors?tab=rea
 */risk-assess* — Automatically analyzes your repository, detects modules (monorepo, frontend/backend, etc.), scans code patterns, and asks targeted questions for dimensions that can't be auto-detected. Writes a structured risk assessment per module to your \`CLAUDE.md\`.
 
 */risk-mitigate* — Reads the risk assessment from \`CLAUDE.md\`, detects already-present measures (linter, CI, SAST, etc.), and helps implement missing mitigations step by step — from tool installation to CI configuration.
+
+[IMPORTANT]
+====
+*Risk Assessments are Architectural Decisions*
+
+Tier classifications and mitigation strategies should be documented as https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions[Architecture Decision Records (ADR nach Nygard)].
+
+\`/risk-assess\` offers automatic ADR generation (optional). The ADR is saved to \`docs/adr/\` and — if present — referenced in arc42 chapter 9. \`/risk-mitigate\` updates the ADR with mitigation implementation status.
+
+*Why ADRs?* Transparency (why was Tier X chosen?), traceability (who decided when?), reviewability (team can discuss before implementation).
+====
 
 *Installation — Plugin (recommended):*
 
