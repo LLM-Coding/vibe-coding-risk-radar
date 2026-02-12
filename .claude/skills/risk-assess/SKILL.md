@@ -240,13 +240,13 @@ Before writing to CLAUDE.md:
 - If it does, ask the user: "CLAUDE.md already contains a risk assessment. Overwrite it?"
 - If the user declines, skip writing
 
-### 4d. ADR Generation (Tier 3+ only)
+### 4d. ADR Generation
 
-If **any module** was assessed as **Tier 3 or higher**, offer to generate an Architecture Decision Record:
+For **all tiers**, offer to generate an Architecture Decision Record:
 
 ```
-Tier 3 detected. Generate an Architecture Decision Record (ADR nach Nygard)?
-  [Y/n] — Recommended for Tier 3+ to document the risk classification decision.
+Generate an Architecture Decision Record (ADR nach Nygard)?
+  [y/N]
 ```
 
 If the user accepts:
