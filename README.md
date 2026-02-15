@@ -21,20 +21,6 @@ npm run build        # Production build
 npm run preview      # Preview build locally
 ```
 
-## Pre-rendering for SEO
-
-The app includes a Puppeteer-based pre-rendering script for better SEO.
-
-**Local pre-rendering (before release):**
-
-```bash
-npm run build:prerender
-```
-
-This renders the full React app to static HTML in `dist/index.html`.
-
-**Note:** Pre-rendering is not run in CI due to Puppeteer/Chrome setup complexity. The deployed version is a standard SPA (search engines with JS support will still index it, just slower).
-
 ## Documentation
 
 - Full docs: `npm run docs` → `dist/docs/`
