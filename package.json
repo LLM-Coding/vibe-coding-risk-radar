@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.js",
     "preview": "vite preview",
     "docs": "asciidoctor -a icons=font -a source-highlighter=highlight.js -a linkcss -a stylesheet=asciidoctor.css -D dist/docs docs/risk-radar.adoc docs/risk-radar-en.adoc",
     "prepare": "husky"
@@ -26,6 +26,8 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
+    "puppeteer": "^24.37.3",
+    "serve-handler": "^6.1.6",
     "vite": "^6.0.0"
   },
   "lint-staged": {
