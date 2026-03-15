@@ -24,6 +24,12 @@
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  color: var(--text-heading);
+  border-color: var(--text-secondary);
 }
 
 .title {
@@ -50,11 +56,16 @@
 }
 
 .presetBtn {
-  padding: 6px 12px;
-  font-size: 15px;
-  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
+}
+
+.presetBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
 .mainContent {
@@ -66,9 +77,10 @@
   margin: 0 auto;
 }
 
+/* ── Chart wrapper: ONE place to control chart box size ── */
 .chartWrapper {
   width: 100%;
-  max-width: 320px;
+  max-width: 500px; /* ← change only this to resize the chart */
 }
 
 .tierBadge {
@@ -87,6 +99,7 @@
 .tierLabel {
   font-weight: 700;
   font-size: 19px;
+  transition: color 0.6s ease;
 }
 
 .tierDesc {
@@ -213,6 +226,13 @@
 
 .footerLink {
   color: var(--text-secondary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.footerLink:hover {
+  border-bottom-color: var(--text-secondary);
 }
 
 .fab {
@@ -240,9 +260,56 @@
   color: var(--text-heading);
   border-color: var(--text-secondary);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
 }
 
 .fabIcon {
   font-size: 18px;
   line-height: 1;
+}
+
+/* ── Tier badge number pop on change ────────────────────────────────────── */
+
+.tierNumber {
+  display: inline-block;
+  animation: tierPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transition: color 0.6s ease;
+}
+
+@keyframes tierPop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Locked measures summary line ───────────────────────────────────────── */
+
+.lockedSummary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px dashed var(--border-subtle);
+  background: transparent;
+}
+
+.lockedIcon {
+  font-size: 14px;
+  opacity: 0.5;
+}
+
+.lockedText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
