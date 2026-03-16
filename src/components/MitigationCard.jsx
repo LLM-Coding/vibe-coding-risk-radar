@@ -35,7 +35,7 @@ export default function MitigationCard({ group, active, accent, t }) {
             <div className={styles.subtitle} style={{ opacity: active ? 1 : 0.4 }}>
               {active
                 ? `${group.measures.length} ${group.measures.length !== 1 ? t.measures : t.measure}`
-                : `Unlocks at Tier ${group.tier}`}
+                : t.unlocksAtTier(group.tier)}
             </div>
           </div>
         </div>
