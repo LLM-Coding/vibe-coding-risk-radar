@@ -407,32 +407,32 @@ export default function RadarChart({
             width={tooltipW}
             height={tooltipH}
             rx={10}
-            fill="#1e293b"
+            fill="var(--bg-card)"
             stroke={tc}
             strokeWidth={1.5}
             filter="url(#tt-shadow)"
           />
           <rect x={tipX} y={tipY} width={4} height={tooltipH} rx={4} fill={tc} />
-          <text x={tipX + 14} y={tipY + 19} fill="#94a3b8" fontSize="11" fontWeight="500">
+          <text x={tipX + 14} y={tipY + 19} fill="var(--text-secondary)" fontSize="11" fontWeight="500">
             {tooltip.label}
           </text>
           <text x={tipX + 14} y={tipY + 39} fill={tc} fontSize="19" fontWeight="800">
             {tooltip.value}
-            <tspan fill="#475569" fontSize="11" fontWeight="400">
+            <tspan fill="var(--text-muted)" fontSize="11" fontWeight="400">
               {" "}
               / 4
             </tspan>
           </text>
           <polygon
             points={`${tipX + tooltipW / 2 - 7},${tipY + tooltipH} ${tipX + tooltipW / 2 + 7},${tipY + tooltipH} ${tipX + tooltipW / 2},${tipY + tooltipH + 10}`}
-            fill="#1e293b"
+            fill="var(--bg-card)"
             stroke={tc}
             strokeWidth={1.5}
             strokeLinejoin="round"
           />
           <polygon
             points={`${tipX + tooltipW / 2 - 5},${tipY + tooltipH - 1} ${tipX + tooltipW / 2 + 5},${tipY + tooltipH - 1} ${tipX + tooltipW / 2},${tipY + tooltipH + 8}`}
-            fill="#1e293b"
+            fill="var(--bg-card)"
           />
         </g>
       )}
