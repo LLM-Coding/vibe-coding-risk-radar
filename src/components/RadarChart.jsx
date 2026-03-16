@@ -125,7 +125,7 @@ export default function RadarChart({
 
   const cx = size / 2;
   const cy = size / 2;
-  const maxR = 130;
+  const maxR = size / 2 - 100;
   const levels = 5;
   const n = safeDims.length || 1; // prevents division by zero
   const angStep = 360 / n;
