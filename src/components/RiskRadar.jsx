@@ -259,7 +259,7 @@ export default function RiskRadar() {
                 <div className={styles.lockedSummary}>
                   <span className={styles.lockedIcon}>🔒</span>
                   <span className={styles.lockedText}>
-                    {lockedCount} locked {lockedCount !== 1 ? t.measures : t.measure}
+                    {lockedCount} {t.locked} {lockedCount !== 1 ? t.measures : t.measure}
                     {" — "}
                     {locked.map((g, i) => (
                       <span key={g.tier}>
