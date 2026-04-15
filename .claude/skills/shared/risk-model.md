@@ -3,11 +3,18 @@
 ## Tier Calculation
 
 ```
-Tier = max(codeType, language, deployment, data, blastRadius)
-Mapping: max <= 1 → Tier 1, max <= 2 → Tier 2, max <= 3 → Tier 3, max = 4 → Tier 4
+base = max(codeType, language, deployment, data, blastRadius)
+baseTier = base <= 1 ? 1 : base <= 2 ? 2 : base <= 3 ? 3 : 4
+
+# LLM Runtime Integration modifier (cross-cutting):
+floor = llmRuntimeLevel >= 4 ? 4 : llmRuntimeLevel >= 3 ? 3 : 1
+
+tier = max(baseTier, floor)
 ```
 
 Tiers are **cumulative**: Tier N includes all mitigations from Tier 1 through N-1.
+
+The **LLM Runtime Integration** modifier is separate from the 5 code dimensions — it describes what the software does _at runtime_, not how the code was written. See the dedicated section below.
 
 ---
 
@@ -15,53 +22,136 @@ Tiers are **cumulative**: Tier N includes all mitigations from Tier 1 through N-
 
 ### 1. Code Type (`codeType`)
 
-| Score | Level | Examples |
-|-------|-------|---------|
-| 0 | UI / CSS / Docs | Styling, static pages, documentation |
-| 1 | Build Scripts / Tests | CI configs, test files, Makefiles |
-| 2 | Business Logic | Domain services, data processing, validation |
-| 3 | API / DB Queries | REST/GraphQL endpoints, SQL, ORM code |
-| 4 | Auth / Security / Crypto | Authentication, encryption, access control |
+| Score | Level                    | Examples                                     |
+| ----- | ------------------------ | -------------------------------------------- |
+| 0     | UI / CSS / Docs          | Styling, static pages, documentation         |
+| 1     | Build Scripts / Tests    | CI configs, test files, Makefiles            |
+| 2     | Business Logic           | Domain services, data processing, validation |
+| 3     | API / DB Queries         | REST/GraphQL endpoints, SQL, ORM code        |
+| 4     | Auth / Security / Crypto | Authentication, encryption, access control   |
 
 ### 2. Language Safety (`language`)
 
-| Score | Level | Languages |
-|-------|-------|-----------|
-| 0 | Static + Memory-safe | Rust |
-| 1 | Statically typed | TypeScript, Java, Go, Kotlin, Scala, Swift |
-| 2 | Dynamically typed | Python, JavaScript, Ruby, PHP, Lua, Elixir |
-| 3 | Memory-unsafe managed | C# with `unsafe` blocks |
-| 4 | Memory-unsafe | C, C++, Assembly |
+| Score | Level                 | Languages                                  |
+| ----- | --------------------- | ------------------------------------------ |
+| 0     | Static + Memory-safe  | Rust                                       |
+| 1     | Statically typed      | TypeScript, Java, Go, Kotlin, Scala, Swift |
+| 2     | Dynamically typed     | Python, JavaScript, Ruby, PHP, Lua, Elixir |
+| 3     | Memory-unsafe managed | C# with `unsafe` blocks                    |
+| 4     | Memory-unsafe         | C, C++, Assembly                           |
 
 ### 3. Deployment Context (`deployment`)
 
-| Score | Level | Examples |
-|-------|-------|---------|
-| 0 | Personal / Prototype | Local tools, learning projects |
-| 1 | Internal tool | Company-internal dashboards, admin tools |
-| 2 | Public-facing app | SaaS, public APIs, mobile apps |
-| 3 | Regulated system | HIPAA, PCI-DSS, SOC2, GDPR-critical |
-| 4 | Safety-critical | Avionics, medical devices, automotive |
+| Score | Level                | Examples                                 |
+| ----- | -------------------- | ---------------------------------------- |
+| 0     | Personal / Prototype | Local tools, learning projects           |
+| 1     | Internal tool        | Company-internal dashboards, admin tools |
+| 2     | Public-facing app    | SaaS, public APIs, mobile apps           |
+| 3     | Regulated system     | HIPAA, PCI-DSS, SOC2, GDPR-critical      |
+| 4     | Safety-critical      | Avionics, medical devices, automotive    |
 
 ### 4. Data Sensitivity (`data`)
 
-| Score | Level | Examples |
-|-------|-------|---------|
-| 0 | Public data | Open datasets, public content |
-| 1 | Internal business data | Revenue figures, internal docs |
-| 2 | General PII | Name, email, phone, address |
-| 3 | Sensitive PII | SSN, biometrics, passport numbers |
-| 4 | PHI / PCI | Medical records (HIPAA), credit cards (PCI) |
+| Score | Level                  | Examples                                    |
+| ----- | ---------------------- | ------------------------------------------- |
+| 0     | Public data            | Open datasets, public content               |
+| 1     | Internal business data | Revenue figures, internal docs              |
+| 2     | General PII            | Name, email, phone, address                 |
+| 3     | Sensitive PII          | SSN, biometrics, passport numbers           |
+| 4     | PHI / PCI              | Medical records (HIPAA), credit cards (PCI) |
 
 ### 5. Blast Radius (`blastRadius`)
 
-| Score | Level | Examples |
-|-------|-------|---------|
-| 0 | Cosmetic / Tech debt | UI glitches, code smell |
-| 1 | Performance / DoS | Slowdowns, service unavailability |
-| 2 | Data loss (recoverable) | Lost data restorable from backups |
-| 3 | Systemic breach | Unrecoverable data exposure |
-| 4 | Safety (life & limb) | Physical harm, loss of life |
+| Score | Level                   | Examples                          |
+| ----- | ----------------------- | --------------------------------- |
+| 0     | Cosmetic / Tech debt    | UI glitches, code smell           |
+| 1     | Performance / DoS       | Slowdowns, service unavailability |
+| 2     | Data loss (recoverable) | Lost data restorable from backups |
+| 3     | Systemic breach         | Unrecoverable data exposure       |
+| 4     | Safety (life & limb)    | Physical harm, loss of life       |
+
+---
+
+## LLM Runtime Integration (`llmRuntimeLevel`, 0–4)
+
+Cross-cutting modifier describing how the software uses LLMs **at runtime** (not how the code was written). This captures a qualitatively different risk profile from LLM-generated code:
+
+- **LLM code** is a build-time problem → mitigated by linters, review, SAST
+- **LLM runtime** is an operational problem → mitigated by sandboxing, tool whitelists, output filters, prompt injection detection
+
+### Escalation ladder
+
+| Level | Name     | Description                                         | Primary risks                                            |
+| ----- | -------- | --------------------------------------------------- | -------------------------------------------------------- |
+| 0     | No LLM   | Classical software, no LLM at runtime               | —                                                        |
+| 1     | Classify | Passive: sentiment, intent, embeddings              | Misclassification, bias                                  |
+| 2     | Generate | Generative output: chat, summaries                  | Hallucination, prompt injection on content               |
+| 3     | Tool Use | Function calling, LLM triggers actions              | Prompt injection → unauthorized actions, jailbreaks      |
+| 4     | Agentic  | Autonomous loops, code execution, self-modification | Prompt injection → RCE, data exfiltration, runaway costs |
+
+### Tier Multiplier (hard floor)
+
+- **L3** → Tier floor 3 (minimum Tier 3 regardless of code dimensions)
+- **L4** → Tier floor 4 (minimum Tier 4 regardless of code dimensions)
+- L0–L2 do not raise the tier floor
+
+Rationale: A coding agent that can execute `rm -rf` is safety-critical by definition, even if the surface blast radius seems small. Agentic systems introduce failure classes (prompt injection → RCE) that classical reviews do not catch.
+
+### Auto-Detection Patterns
+
+Auto-detection only produces **hints** — the user must always confirm the level explicitly, because library presence alone is ambiguous (a library can be used for testing, data-science notebooks, or production).
+
+**LLM SDK imports (any level ≥ L1):**
+
+```
+\b(from\s+anthropic|import\s+anthropic)\b
+\b(from\s+openai|import\s+openai)\b
+\b(@anthropic-ai/sdk|@anthropic-ai/claude-agent-sdk)
+\b(@ai-sdk/(openai|anthropic|google|mistral|cohere))
+\b(langchain|langgraph|llama[-_]?index|llamaindex)\b
+\b(ollama|together|groq|replicate|cohere|mistralai|bedrock-runtime)\b
+\b(@google/generative-ai|google-generativeai|vertexai)\b
+```
+
+**Agentic / Tool Use indicators (hints toward L3–L4):**
+
+```
+\b(tool_use|tool_choice|function_call|functions\s*[:=])\b
+\b(tools\s*[:=]\s*\[)
+\b(agent|agentic|autonomous|react_?agent|tool_?agent)\b
+\b(execute_?command|shell_?exec|run_?code|code_?interpreter)\b
+\b(langchain\.(agents|tools)|langgraph)\b
+```
+
+**Code-execution sandbox libraries (strong L4 indicator):**
+
+```
+\b(e2b|firecracker|gvisor|deno-sandbox|pyodide)\b
+\b(docker-py|dockerode.*exec|subprocess.*llm)\b
+```
+
+### Confidence
+
+| Detection signal                                            | Confidence | User confirmation                                    |
+| ----------------------------------------------------------- | ---------- | ---------------------------------------------------- |
+| LLM SDK imported                                            | 0.6 (L1+)  | **Always** — library could be for tests/data-science |
+| Generative patterns (`messages.create`, `chat.completions`) | 0.75 (L2+) | **Always**                                           |
+| Tool use / function calling patterns                        | 0.7 (L3+)  | **Always**                                           |
+| Sandbox/code-execution libraries                            | 0.85 (L4)  | **Always**                                           |
+| No LLM imports found                                        | 0.9 (L0)   | Only if user mentions LLM use                        |
+
+### CLAUDE.md output
+
+LLM Runtime level is stored as part of the per-module assessment:
+
+```markdown
+### Module: {module-name}
+
+**LLM Runtime Integration:** L{N} ({name}) — {evidence or "user input"}
+
+| Dimension | Score | Level | Evidence |
+...
+```
 
 ---
 
@@ -71,26 +161,26 @@ Tiers are **cumulative**: Tier N includes all mitigations from Tier 1 through N-
 
 Check these files for explicit module declarations:
 
-| Config File | Parse Field | Module = |
-|-------------|-------------|----------|
-| `pnpm-workspace.yaml` | `packages:` array | Each resolved glob path |
-| `package.json` (root) | `"workspaces"` field | Each resolved glob path |
-| `lerna.json` | `"packages"` array | Each resolved path |
-| `Cargo.toml` (root) | `[workspace] members` | Each member path |
-| `settings.gradle(.kts)` | `include(...)` | Each subproject dir |
-| `pom.xml` (root) | `<modules>` elements | Each module dir |
-| `go.work` | `use (...)` | Each module dir |
+| Config File             | Parse Field           | Module =                |
+| ----------------------- | --------------------- | ----------------------- |
+| `pnpm-workspace.yaml`   | `packages:` array     | Each resolved glob path |
+| `package.json` (root)   | `"workspaces"` field  | Each resolved glob path |
+| `lerna.json`            | `"packages"` array    | Each resolved path      |
+| `Cargo.toml` (root)     | `[workspace] members` | Each member path        |
+| `settings.gradle(.kts)` | `include(...)`        | Each subproject dir     |
+| `pom.xml` (root)        | `<modules>` elements  | Each module dir         |
+| `go.work`               | `use (...)`           | Each module dir         |
 
 ### Phase 2: Conventional Directories (confidence: 0.6–0.8)
 
-| Pattern | Signal |
-|---------|--------|
-| `packages/*/package.json` | JS/TS monorepo packages |
-| `apps/*/` with build config | Application packages |
-| `services/*/Dockerfile` | Microservices |
-| `frontend/` + `backend/` | Client/server split |
-| `src/client/` + `src/server/` | Co-located client/server |
-| `docker-compose.yml` with multiple `build:` | Multi-service |
+| Pattern                                     | Signal                   |
+| ------------------------------------------- | ------------------------ |
+| `packages/*/package.json`                   | JS/TS monorepo packages  |
+| `apps/*/` with build config                 | Application packages     |
+| `services/*/Dockerfile`                     | Microservices            |
+| `frontend/` + `backend/`                    | Client/server split      |
+| `src/client/` + `src/server/`               | Co-located client/server |
+| `docker-compose.yml` with multiple `build:` | Multi-service            |
 
 ### Phase 3: Fallback
 
@@ -103,6 +193,7 @@ Entire repository = single module.
 ### Code Type Patterns
 
 **Auth/Security/Crypto (codeType=4):**
+
 ```
 \b(bcrypt|argon2|scrypt|pbkdf2)\b
 \b(jwt|jsonwebtoken|jose)\b
@@ -116,6 +207,7 @@ Entire repository = single module.
 ```
 
 **API/DB (codeType=3):**
+
 ```
 \b(app\.(get|post|put|delete|patch|use)\s*\()
 \b(@(Get|Post|Put|Delete|Patch)Mapping)
@@ -128,6 +220,7 @@ Entire repository = single module.
 ### Data Sensitivity Patterns
 
 **PHI/PCI (data=4):**
+
 ```
 \b(hipaa|phi|protected.health|health.record|medical.record)\b
 \b(pci|pci.dss|credit.card|card.number|cvv|cvc)\b
@@ -136,6 +229,7 @@ Entire repository = single module.
 ```
 
 **Sensitive PII (data=3):**
+
 ```
 \b(ssn|social.security.number|social_security)\b
 \b(passport.number|driver.?license|national.?id)\b
@@ -144,6 +238,7 @@ Entire repository = single module.
 ```
 
 **General PII (data=2):**
+
 ```
 \b(email|first.?name|last.?name|full.?name|phone.?number)\b
 \b(date.?of.?birth|dob|birth.?date|address|zip.?code)\b
@@ -153,11 +248,13 @@ Entire repository = single module.
 ### Deployment/Regulatory Patterns
 
 **Regulated (deployment>=3):**
+
 ```
 \b(HIPAA|PCI.DSS|SOC.?2|GDPR|FedRAMP|FISMA|NIST)\b
 ```
 
 **Safety-critical (deployment=4):**
+
 ```
 \b(DO.?178|IEC.?61508|ISO.?26262|EN.?50128)\b
 \b(SIL|DAL|ASIL|safety.?integrity|safety.?critical)\b
@@ -166,25 +263,25 @@ Entire repository = single module.
 
 ### Language Detection (file extensions)
 
-| Score | Extensions |
-|-------|-----------|
-| 0 | `.rs` |
-| 1 | `.ts`, `.tsx`, `.java`, `.go`, `.kt`, `.kts`, `.scala`, `.swift` |
-| 2 | `.py`, `.js`, `.jsx`, `.rb`, `.php`, `.lua`, `.pl`, `.ex`, `.exs` |
-| 3 | `.cs` (check for `unsafe` keyword → 3, else → 1) |
-| 4 | `.c`, `.h`, `.cpp`, `.cc`, `.cxx`, `.hpp`, `.asm`, `.s` |
+| Score | Extensions                                                        |
+| ----- | ----------------------------------------------------------------- |
+| 0     | `.rs`                                                             |
+| 1     | `.ts`, `.tsx`, `.java`, `.go`, `.kt`, `.kts`, `.scala`, `.swift`  |
+| 2     | `.py`, `.js`, `.jsx`, `.rb`, `.php`, `.lua`, `.pl`, `.ex`, `.exs` |
+| 3     | `.cs` (check for `unsafe` keyword → 3, else → 1)                  |
+| 4     | `.c`, `.h`, `.cpp`, `.cc`, `.cxx`, `.hpp`, `.asm`, `.s`           |
 
 ---
 
 ## Auto-Detection Confidence Levels
 
-| Dimension | Confidence | User Confirmation Needed? |
-|-----------|-----------|--------------------------|
-| codeType | 0.7–0.85 | Only if score <= 2 |
-| language | 0.85–0.95 | Rarely |
-| deployment | 0.2–0.5 | **Always** |
-| data | 0.5–0.7 | Usually (confirm >= 2) |
-| blastRadius | 0.1–0.3 | **Always** |
+| Dimension   | Confidence | User Confirmation Needed? |
+| ----------- | ---------- | ------------------------- |
+| codeType    | 0.7–0.85   | Only if score <= 2        |
+| language    | 0.85–0.95  | Rarely                    |
+| deployment  | 0.2–0.5    | **Always**                |
+| data        | 0.5–0.7    | Usually (confirm >= 2)    |
+| blastRadius | 0.1–0.3    | **Always**                |
 
 ---
 
@@ -192,71 +289,71 @@ Entire repository = single module.
 
 ### Tier 1 — Automated Gates (always active)
 
-| Measure | Type | Tools |
-|---------|------|-------|
-| Linter & Formatter | deterministic | ESLint, Prettier, Ruff, Black |
-| Type Checking | deterministic | TypeScript strict, mypy |
-| Pre-Commit Hooks | deterministic | husky + lint-staged, pre-commit framework |
-| Dependency Check | deterministic | npm audit, pip-audit, cargo audit |
-| CI Build & Unit Tests | deterministic | GitHub Actions, Jenkins, GitLab CI |
+| Measure               | Type          | Tools                                     |
+| --------------------- | ------------- | ----------------------------------------- |
+| Linter & Formatter    | deterministic | ESLint, Prettier, Ruff, Black             |
+| Type Checking         | deterministic | TypeScript strict, mypy                   |
+| Pre-Commit Hooks      | deterministic | husky + lint-staged, pre-commit framework |
+| Dependency Check      | deterministic | npm audit, pip-audit, cargo audit         |
+| CI Build & Unit Tests | deterministic | GitHub Actions, Jenkins, GitLab CI        |
 
 **Detection signals for existing mitigations:**
 
-| Measure | Config Files |
-|---------|-------------|
-| Linter | `.eslintrc*`, `ruff.toml`, `.pylintrc`, `lint` script in package.json |
-| Formatter | `.prettierrc*`, `rustfmt.toml`, `black` in pyproject.toml |
-| Type Checking | `tsconfig.json` (strict: true), `mypy.ini`, `[mypy]` in pyproject.toml |
-| Pre-Commit | `.pre-commit-config.yaml`, `.husky/`, `lint-staged` in package.json |
-| Dependency Check | `audit` in CI workflows, `safety` / `pip-audit` in requirements |
-| CI/CD | `.github/workflows/`, `Jenkinsfile`, `.gitlab-ci.yml` |
+| Measure          | Config Files                                                           |
+| ---------------- | ---------------------------------------------------------------------- |
+| Linter           | `.eslintrc*`, `ruff.toml`, `.pylintrc`, `lint` script in package.json  |
+| Formatter        | `.prettierrc*`, `rustfmt.toml`, `black` in pyproject.toml              |
+| Type Checking    | `tsconfig.json` (strict: true), `mypy.ini`, `[mypy]` in pyproject.toml |
+| Pre-Commit       | `.pre-commit-config.yaml`, `.husky/`, `lint-staged` in package.json    |
+| Dependency Check | `audit` in CI workflows, `safety` / `pip-audit` in requirements        |
+| CI/CD            | `.github/workflows/`, `Jenkinsfile`, `.gitlab-ci.yml`                  |
 
 ### Tier 2 — Extended Assurance
 
-| Measure | Type | Tools |
-|---------|------|-------|
-| SAST | deterministic | Semgrep, CodeQL |
-| AI Code Review | probabilistic | CodeRabbit, Copilot Review |
-| Property-Based Tests | probabilistic | fast-check, Hypothesis |
-| SonarQube Quality Gate | deterministic | SonarQube, SonarCloud |
-| Sampling Review (~20%) | organizational | PR review policy |
+| Measure                | Type           | Tools                      |
+| ---------------------- | -------------- | -------------------------- |
+| SAST                   | deterministic  | Semgrep, CodeQL            |
+| AI Code Review         | probabilistic  | CodeRabbit, Copilot Review |
+| Property-Based Tests   | probabilistic  | fast-check, Hypothesis     |
+| SonarQube Quality Gate | deterministic  | SonarQube, SonarCloud      |
+| Sampling Review (~20%) | organizational | PR review policy           |
 
 **Detection signals:**
 
-| Measure | Config Files |
-|---------|-------------|
-| SAST | `semgrep.yml` in CI, `codeql-analysis.yml`, `.semgrep/` |
-| SonarQube | `sonar-project.properties`, sonar step in CI |
-| Property-Based Tests | `fast-check` / `hypothesis` in dependencies |
+| Measure              | Config Files                                            |
+| -------------------- | ------------------------------------------------------- |
+| SAST                 | `semgrep.yml` in CI, `codeql-analysis.yml`, `.semgrep/` |
+| SonarQube            | `sonar-project.properties`, sonar step in CI            |
+| Property-Based Tests | `fast-check` / `hypothesis` in dependencies             |
 
 ### Tier 3 — Mandatory Measures for High Risk
 
-| Measure | Type | Tools |
-|---------|------|-------|
-| Mandatory Human Review | organizational | Branch protection rules |
-| Sandbox / Isolation | deterministic | Firecracker, Deno Sandbox |
-| Fuzzing | probabilistic | AFL++, cargo-fuzz, Fuzz4All |
-| Penetration Testing | organizational | Regular security audits |
-| Canary Deployments | deterministic | Gradual rollout + auto-rollback |
+| Measure                | Type           | Tools                            |
+| ---------------------- | -------------- | -------------------------------- |
+| Mandatory Human Review | organizational | Branch protection rules          |
+| Sandbox / Isolation    | deterministic  | Firecracker, Deno Sandbox        |
+| Fuzzing                | probabilistic  | AFL++, cargo-fuzz, Fuzz4All      |
+| Penetration Testing    | organizational | Regular security audits          |
+| Canary Deployments     | deterministic  | Gradual rollout + auto-rollback  |
 | PromptBOM / Provenance | organizational | Document model, prompt, approver |
 
 **Detection signals:**
 
-| Measure | Config Files |
-|---------|-------------|
+| Measure           | Config Files                                                     |
+| ----------------- | ---------------------------------------------------------------- |
 | Branch Protection | Check via `gh api repos/{owner}/{repo}/branches/main/protection` |
-| Fuzzing | `fuzz/` directory, `cargo-fuzz` in deps, AFL config |
+| Fuzzing           | `fuzz/` directory, `cargo-fuzz` in deps, AFL config              |
 
 ### Tier 4 — Critical (Severely Restrict AI Use)
 
-| Measure | Type | Tools |
-|---------|------|-------|
-| Formal Verification | deterministic | Dafny, TLA+, SPARK |
+| Measure                     | Type           | Tools                             |
+| --------------------------- | -------------- | --------------------------------- |
+| Formal Verification         | deterministic  | Dafny, TLA+, SPARK                |
 | Independent Re-Verification | organizational | Separate team (per DO-178C DAL A) |
-| MC/DC Test Coverage | deterministic | Coverage tools with MC/DC support |
-| Contract-Based Design | deterministic | Pre/postconditions + invariants |
-| Certification Process | organizational | IEC 61508, DO-178C, ISO 26262 |
-| AI as Draft Aid Only | organizational | LLM proposes, human implements |
+| MC/DC Test Coverage         | deterministic  | Coverage tools with MC/DC support |
+| Contract-Based Design       | deterministic  | Pre/postconditions + invariants   |
+| Certification Process       | organizational | IEC 61508, DO-178C, ISO 26262     |
+| AI as Draft Aid Only        | organizational | LLM proposes, human implements    |
 
 ---
 
@@ -270,24 +367,33 @@ Entire repository = single module.
 _Generated by `/risk-assess` on YYYY-MM-DD_
 
 ### Module: {module-name}
-| Dimension | Score | Level | Evidence |
-|-----------|-------|-------|----------|
-| Code Type | N | {level} | {files/patterns found} |
-| Language | N | {level} | {file counts by extension} |
-| Deployment | N | {level} | {config hints or user input} |
-| Data Sensitivity | N | {level} | {patterns found or user input} |
-| Blast Radius | N | {level} | {user input} |
 
-**Tier: N — {label}** (determined by {dimension} = {score})
+**LLM Runtime Integration:** L{N} ({name}) — {evidence or "user input: no runtime LLM use"}
+
+| Dimension        | Score | Level   | Evidence                       |
+| ---------------- | ----- | ------- | ------------------------------ |
+| Code Type        | N     | {level} | {files/patterns found}         |
+| Language         | N     | {level} | {file counts by extension}     |
+| Deployment       | N     | {level} | {config hints or user input}   |
+| Data Sensitivity | N     | {level} | {patterns found or user input} |
+| Blast Radius     | N     | {level} | {user input}                   |
+
+**Tier: N — {label}** (determined by {dimension} = {score}{, lifted to Tier N by LLM Runtime L{N} | if modifier applied})
 ```
+
+If the LLM Runtime modifier lifted the tier, make that explicit in the determining-dimension note:
+
+- Without modifier: `(determined by Code Type = 3)`
+- With modifier: `(determined by Code Type = 2, lifted to Tier 4 by LLM Runtime L4 — Agentic)`
 
 ### Per-Module Mitigation Status
 
 ```markdown
 ### Mitigations: {module-name} (Tier N)
-| Measure | Status | Details |
-|---------|--------|---------|
-| {name} | {status-emoji} {status} | {config file or note} |
+
+| Measure | Status                  | Details               |
+| ------- | ----------------------- | --------------------- |
+| {name}  | {status-emoji} {status} | {config file or note} |
 ```
 
 Status values: `Vorhanden/Present`, `Eingerichtet/Set up`, `Ausstehend/Pending`, `N/A`
