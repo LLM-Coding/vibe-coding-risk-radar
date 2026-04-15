@@ -302,7 +302,9 @@ Dieses Framework bietet eine https://github.com/LLM-Coding/Semantic-Anchors?tab=
 
 *Halluzinierte Packages (Slopsquatting)* — https://www.helpnetsecurity.com/2025/04/14/package-hallucination-slopsquatting-malicious-code/[~20% der empfohlenen Packages existieren nicht]. Angreifer können diese Namen registrieren. "huggingface-cli" wurde https://www.infosecurity-magazine.com/news/ai-hallucinations-slopsquatting/[über 30.000 mal installiert].
 
-*Automation Complacency* — Entwickler mit AI-Assistenten produzieren mehr Vulnerabilities und glauben gleichzeitig, sichereren Code zu schreiben (https://arxiv.org/abs/2211.03622[Stanford, Perry et al. 2022]). https://devclass.com/2025/02/20/ai-is-eroding-code-quality-states-new-in-depth-report/[Code-Review-Beteiligung sinkt um 30%].`,
+*Automation Complacency* — Entwickler mit AI-Assistenten produzieren mehr Vulnerabilities und glauben gleichzeitig, sichereren Code zu schreiben (https://arxiv.org/abs/2211.03622[Stanford, Perry et al. 2022]). https://devclass.com/2025/02/20/ai-is-eroding-code-quality-states-new-in-depth-report/[Code-Review-Beteiligung sinkt um 30%].
+
+*Beschleunigter Lehman-Decay* — https://en.wikipedia.org/wiki/Lehman%27s_laws_of_software_evolution[Lehmans Gesetze (1980)] unterscheiden *S-Type* (formal spezifiziert, geschlossen), *P-Type* (Problemlösung mit Näherungs-Spec) und *E-Type* (in die Welt eingebettet, muss mitevolvieren — Banking, SaaS, Agenten). E-Type-Systeme unterliegen *Continuing Change*, *Increasing Complexity* und *Declining Quality*. AI-generierter Code beschleunigt diese Zerfallsdynamik, weil LLMs kein persistentes Gedächtnis der Projekthistorie haben — sie können nicht "mit dem Code altern". Bei S-Type-Code (Algorithmen, reine Utility-Funktionen) ist das Risiko gering. Faustregel: Je E-typischer das System, desto mehr Review-Budget und Refactoring-Kapazität einplanen.`,
         },
         {
           id: "mitigations",
@@ -664,7 +666,9 @@ This framework provides a https://github.com/LLM-Coding/Semantic-Anchors?tab=rea
 
 *Hallucinated packages (Slopsquatting)* — https://www.helpnetsecurity.com/2025/04/14/package-hallucination-slopsquatting-malicious-code/[~20% of recommended packages don't exist]. Attackers can register these names. "huggingface-cli" was https://www.infosecurity-magazine.com/news/ai-hallucinations-slopsquatting/[installed 30,000+ times] before detection.
 
-*Automation Complacency* — Developers using AI assistants produce more vulnerabilities while simultaneously believing they write more secure code (https://arxiv.org/abs/2211.03622[Stanford, Perry et al. 2022]). https://devclass.com/2025/02/20/ai-is-eroding-code-quality-states-new-in-depth-report/[Code review participation drops by 30%].`,
+*Automation Complacency* — Developers using AI assistants produce more vulnerabilities while simultaneously believing they write more secure code (https://arxiv.org/abs/2211.03622[Stanford, Perry et al. 2022]). https://devclass.com/2025/02/20/ai-is-eroding-code-quality-states-new-in-depth-report/[Code review participation drops by 30%].
+
+*Accelerated Lehman Decay* — https://en.wikipedia.org/wiki/Lehman%27s_laws_of_software_evolution[Lehman's laws (1980)] distinguish *S-type* (formally specified, closed), *P-type* (problem-solving with approximate spec), and *E-type* (embedded in the world, must evolve with it — banking, SaaS, agents). E-type systems are subject to *continuing change*, *increasing complexity*, and *declining quality*. AI-generated code accelerates this decay dynamic because LLMs have no persistent memory of project history — they cannot "age with the code". For S-type code (algorithms, pure utility functions), the risk is low. Rule of thumb: The more E-type a system, the more review budget and refactoring capacity to plan for.`,
         },
         {
           id: "mitigations",
