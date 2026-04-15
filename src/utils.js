@@ -1,6 +1,9 @@
-export function getTierIndex(values) {
+export function getTierIndex(values, llmRuntimeLevel = 0) {
   const mx = Math.max(...Object.values(values));
-  return mx <= 1 ? 0 : mx <= 2 ? 1 : mx <= 3 ? 2 : 3;
+  const base = mx <= 1 ? 0 : mx <= 2 ? 1 : mx <= 3 ? 2 : 3;
+  // LLM Runtime Modifier: L3 → min Tier 3 (index 2), L4 → min Tier 4 (index 3)
+  const floor = llmRuntimeLevel >= 4 ? 3 : llmRuntimeLevel >= 3 ? 2 : 0;
+  return Math.max(base, floor);
 }
 
 export function polarToCartesian(cx, cy, r, angleDeg) {

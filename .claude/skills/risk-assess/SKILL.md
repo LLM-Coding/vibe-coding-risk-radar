@@ -145,6 +145,37 @@ Blast radius is nearly impossible to auto-detect. Note any hints:
 
 Flag that user confirmation is **required**.
 
+### 2f. LLM Runtime Integration Detection
+
+Grep for LLM SDK imports and agentic patterns using the patterns in the
+`LLM Runtime Integration` section of `.claude/skills/shared/risk-model.md`.
+
+Report findings with evidence:
+
+```
+LLM Runtime scan for {module}:
+  LLM SDK imports: 3 files
+    src/chat/client.ts:1 — imports "openai"
+    src/summarize.ts:2 — imports "@anthropic-ai/sdk"
+  Generative patterns (L2+): 2 files
+    src/chat/client.ts:14 — matches "messages.create"
+  Tool use / agentic patterns (L3+): 0 matches
+  Code-execution sandbox (L4): 0 matches
+  → Auto-detected hint: L2 (Generative)
+```
+
+If **no** LLM imports are found:
+
+```
+LLM Runtime scan for {module}:
+  No LLM SDK imports found.
+  → Auto-detected hint: L0 (No LLM)
+```
+
+Auto-detection produces only a **hint** — the user must always confirm the
+level explicitly in Step 3. A library import alone is ambiguous (could be
+test code, data-science notebooks, build tooling, or production).
+
 ---
 
 ## Step 3 — Interactive Confirmation
@@ -203,6 +234,34 @@ Data Sensitivity: Auto-detected score 2 (General PII)
   [Keep 2] / [Upgrade to 3: Sensitive PII] / [Upgrade to 4: PHI/PCI]
 ```
 
+### 3d. LLM Runtime Integration Confirmation (ALWAYS ask)
+
+Auto-detection produces only a hint — **always** ask the user to confirm,
+even if L0 was detected (the user may know about planned future LLM use).
+
+Present the hint with evidence, then ask:
+
+```
+LLM Runtime Integration for {module}:
+  Auto-detected hint: L2 (Generative)
+  Evidence: openai + @anthropic-ai/sdk imported, messages.create pattern found in src/chat/client.ts
+
+  How does this module use LLMs at runtime?
+  [0] No LLM — classical software, no LLM at runtime
+  [1] Classify — passive use: sentiment, intent, embeddings
+  [2] Generate — generative output: chat, summaries
+  [3] Tool Use — function calling, LLM triggers actions
+  [4] Agentic — autonomous loops, code execution, self-modification
+
+  Suggested: [2]
+```
+
+Remind the user of the tier implications before they answer:
+
+> **Note:** L3 forces at least Tier 3, L4 forces at least Tier 4, regardless
+> of the code dimensions. A coding agent that could run `rm -rf` is
+> safety-critical by definition.
+
 ---
 
 ## Step 4 — Tier Calculation and Output
@@ -210,11 +269,14 @@ Data Sensitivity: Auto-detected score 2 (General PII)
 ### 4a. Calculate Tier
 
 ```
-Tier = max(codeType, language, deployment, data, blastRadius)
-Mapping: max <= 1 → Tier 1, max <= 2 → Tier 2, max <= 3 → Tier 3, max = 4 → Tier 4
+base     = max(codeType, language, deployment, data, blastRadius)
+baseTier = base <= 1 ? 1 : base <= 2 ? 2 : base <= 3 ? 3 : 4
+floor    = llmRuntimeLevel >= 4 ? 4 : llmRuntimeLevel >= 3 ? 3 : 1
+tier     = max(baseTier, floor)
 ```
 
-Present the result:
+Present the result. If the LLM Runtime modifier **lifted** the tier
+above the base, make that explicit:
 
 ```
 {module} Risk Assessment:
@@ -223,8 +285,24 @@ Present the result:
   Deployment:       2 (Public-facing app)
   Data Sensitivity: 2 (General PII)
   Blast Radius:     1 (Performance / DoS)
+  LLM Runtime:      L0 (No LLM)
 
   → Tier 3 — determined by Code Type = 3
+```
+
+Example with modifier lift:
+
+```
+{module} Risk Assessment:
+  Code Type:        2 (Business Logic)
+  Language:         2 (Dynamically typed)
+  Deployment:       2 (Public-facing app)
+  Data Sensitivity: 1 (Internal business data)
+  Blast Radius:     2 (Data loss recoverable)
+  LLM Runtime:      L4 (Agentic)
+
+  Base Tier: 2 — Moderate
+  → Tier 4 — lifted from Tier 2 by LLM Runtime L4 (Agentic)
 ```
 
 ### 4b. Scan Existing Mitigations

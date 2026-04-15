@@ -18,14 +18,15 @@ Read the shared risk model at `.claude/skills/shared/risk-model.md` for all meas
    > No Risk Radar Assessment found in CLAUDE.md. Please run `/risk-assess` first.
 4. If found, parse every `### Module: {name}` subsection. For each module extract:
    - The five dimension scores (codeType, language, deployment, data, blastRadius)
+   - The **LLM Runtime Integration** level (L0–L4), if present (default L0 for legacy assessments)
    - The overall **Tier** (1–4)
 5. Print a summary table:
 
 ```
 Found N module(s) with risk assessments:
-| Module | Tier | Highest Dimension |
-|--------|------|-------------------|
-| ...    | ...  | ...               |
+| Module | Tier | Highest Dimension | LLM Runtime |
+|--------|------|-------------------|-------------|
+| ...    | ...  | ...               | L{N}        |
 ```
 
 ---
@@ -115,6 +116,54 @@ After the table, summarize:
 - Already present: Y
 - Missing: Z
 - Completion: Y/X (percentage)
+
+### 3b. LLM Runtime Callout (L3+ modules only)
+
+If any module has `llmRuntimeLevel >= 3`, display a **callout** before moving
+to implementation, making it explicit that our mitigation catalog is
+**insufficient** for runtime LLM risks:
+
+```
+⚠️  {module} has LLM Runtime Integration L{N} ({name})
+
+The mitigations listed above cover build-time risks (how the code was
+written). Your runtime LLM use introduces a qualitatively different risk
+class — prompt injection, unauthorized tool calls, agentic runaway — that
+this framework does not deeply cover.
+
+For these risks, defer to specialized frameworks:
+
+  • OWASP LLM Top 10
+    https://owasp.org/www-project-top-10-for-large-language-model-applications/
+  • Palo Alto Unit 42 SHIELD
+    https://unit42.paloaltonetworks.com/securing-vibe-coding-tools/
+  • Aikido VCAL
+    https://www.aikido.dev/blog/vibe-coding-security
+  • Google SAIF
+    https://saif.google/secure-ai-framework
+
+Recommended runtime mitigations (not installable via this skill):
+  - Prompt injection detection and input sanitization
+  - Tool allow-list / deny-list with least-privilege function calling
+  - Output filtering (PII redaction, unsafe content detection)
+  - Sandbox for code execution (e2b, Firecracker, gVisor)
+  - Rate limiting and cost caps per user/session
+  - Audit logging of all tool calls with prompt provenance
+  - Human-in-the-loop confirmation for destructive actions
+```
+
+Ask the user:
+
+```
+Would you like to track these runtime mitigations in CLAUDE.md as
+pending items? [y/N]
+```
+
+If yes, add a new table `### LLM Runtime Mitigations: {module-name} (L{N})`
+to CLAUDE.md with the recommended runtime mitigations as `Pending`, plus
+links to the source framework for each. The skill **does not** install
+these tools — they require architectural decisions that belong with the
+user, not an automated skill.
 
 ---
 

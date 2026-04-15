@@ -83,6 +83,94 @@
   max-width: 500px; /* ← change only this to resize the chart */
 }
 
+/* ── LLM Runtime Integration Modifier ───────────────────────────────────── */
+
+.llmRuntime {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.llmRuntimeLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.llmRuntimeLevels {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.llmRuntimeBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  min-width: 74px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.llmRuntimeBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.llmRuntimeBtnLabel {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.85;
+}
+
+.llmRuntimeCallout {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.llmRuntimeCallout strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.llmRuntimeLinks {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.llmRuntimeLinks a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid var(--link-underline);
+  font-weight: 600;
+  font-size: 12px;
+  transition: border-color 0.2s ease;
+}
+
+.llmRuntimeLinks a:hover {
+  border-bottom-color: var(--link);
+}
+
 .tierBadge {
   display: inline-flex;
   align-items: center;

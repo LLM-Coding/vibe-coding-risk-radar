@@ -20,6 +20,15 @@ export default function RiskRadar() {
   // React state holds only the final integer values (for tier badge, level labels etc.)
   const [values, setValues] = useState({ codeType: 0, language: 1, deployment: 0, data: 0, blastRadius: 0 });
 
+  // LLM Runtime Integration Level (0=none, 1=classify, 2=generate, 3=tools, 4=agentic)
+  // Cross-cutting modifier — at L3+ it pushes the effective tier floor up.
+  const [llmRuntimeLevel, setLlmRuntimeLevelState] = useState(0);
+  const llmRuntimeLevelRef = useRef(0);
+  const setLlmRuntimeLevel = useCallback((level) => {
+    llmRuntimeLevelRef.current = level;
+    setLlmRuntimeLevelState(level);
+  }, []);
+
   // Animated float values live in a ref — updated every rAF frame
   // Both sliders and RadarChart read from this ref via their own refs
   const floatValuesRef = useRef({ ...values });
@@ -88,7 +97,7 @@ export default function RiskRadar() {
     roundedValues[k] = Math.round(values[k]);
   });
 
-  const ti = getTierIndex(roundedValues);
+  const ti = getTierIndex(roundedValues, llmRuntimeLevel);
   const tier = t.tiers[ti];
   const tc = TIER_BG[ti];
 
@@ -138,11 +147,15 @@ export default function RiskRadar() {
       {/* Presets */}
       <div className={styles.presets}>
         {t.presets.map((p) => {
-          const active = JSON.stringify(roundedValues) === JSON.stringify(p.values);
+          const presetLevel = p.llmRuntimeLevel ?? 0;
+          const active = JSON.stringify(roundedValues) === JSON.stringify(p.values) && llmRuntimeLevel === presetLevel;
           return (
             <button
               key={p.name}
-              onClick={() => animateTo(p.values)}
+              onClick={() => {
+                setLlmRuntimeLevel(presetLevel);
+                animateTo(p.values);
+              }}
               className={styles.presetBtn}
               style={{
                 border: active ? `2px solid ${tc}` : "1px solid var(--border)",
@@ -162,10 +175,51 @@ export default function RiskRadar() {
           <RadarChart
             values={values}
             dimensions={t.dimensions}
+            llmRuntimeLevel={llmRuntimeLevel}
             registerUpdater={(fn) => {
               chartValuesRef.current = fn;
             }}
           />
+        </div>
+
+        {/* LLM Runtime Integration Modifier */}
+        <div className={styles.llmRuntime}>
+          <div className={styles.llmRuntimeLabel}>{t.llmRuntime.label}</div>
+          <div className={styles.llmRuntimeLevels}>
+            {[0, 1, 2, 3, 4].map((lvl) => {
+              const isActive = llmRuntimeLevel === lvl;
+              const levelInfo = t.llmRuntime.levels[lvl];
+              return (
+                <button
+                  key={lvl}
+                  onClick={() => setLlmRuntimeLevel(lvl)}
+                  className={styles.llmRuntimeBtn}
+                  title={levelInfo.desc}
+                  style={{
+                    border: isActive ? `2px solid ${tc}` : "1px solid var(--border)",
+                    background: isActive ? `${tc}22` : "var(--bg-card)",
+                    color: isActive ? "var(--text-heading)" : "var(--text-muted)",
+                    fontWeight: isActive ? 700 : 500,
+                  }}
+                >
+                  L{lvl}
+                  <span className={styles.llmRuntimeBtnLabel}>{levelInfo.short}</span>
+                </button>
+              );
+            })}
+          </div>
+          {llmRuntimeLevel >= 3 && (
+            <div className={styles.llmRuntimeCallout} style={{ borderLeft: `3px solid ${tc}` }}>
+              <strong>{t.llmRuntime.calloutTitle}</strong> {t.llmRuntime.calloutBody}
+              <div className={styles.llmRuntimeLinks}>
+                {t.llmRuntime.frameworks.map((fw) => (
+                  <a key={fw.name} href={fw.url} target="_blank" rel="noopener">
+                    {fw.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Tier badge */}
