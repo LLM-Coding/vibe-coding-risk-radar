@@ -147,11 +147,15 @@ export default function RiskRadar() {
       {/* Presets */}
       <div className={styles.presets}>
         {t.presets.map((p) => {
-          const active = JSON.stringify(roundedValues) === JSON.stringify(p.values);
+          const presetLevel = p.llmRuntimeLevel ?? 0;
+          const active = JSON.stringify(roundedValues) === JSON.stringify(p.values) && llmRuntimeLevel === presetLevel;
           return (
             <button
               key={p.name}
-              onClick={() => animateTo(p.values)}
+              onClick={() => {
+                setLlmRuntimeLevel(presetLevel);
+                animateTo(p.values);
+              }}
               className={styles.presetBtn}
               style={{
                 border: active ? `2px solid ${tc}` : "1px solid var(--border)",

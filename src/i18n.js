@@ -121,6 +121,21 @@ const T = {
       { name: "Payment Service", values: { codeType: 4, language: 1, deployment: 2, data: 4, blastRadius: 3 } },
       { name: "Auth-Modul (Fintech)", values: { codeType: 4, language: 2, deployment: 2, data: 3, blastRadius: 3 } },
       { name: "Medizingerät-Firmware", values: { codeType: 4, language: 4, deployment: 4, data: 4, blastRadius: 4 } },
+      {
+        name: "Support-Chatbot",
+        values: { codeType: 2, language: 2, deployment: 2, data: 2, blastRadius: 1 },
+        llmRuntimeLevel: 2,
+      },
+      {
+        name: "RAG-Wissensassistent",
+        values: { codeType: 2, language: 2, deployment: 2, data: 2, blastRadius: 2 },
+        llmRuntimeLevel: 3,
+      },
+      {
+        name: "Coding-Agent",
+        values: { codeType: 3, language: 2, deployment: 2, data: 1, blastRadius: 3 },
+        llmRuntimeLevel: 4,
+      },
     ],
     mitigations: [
       {
@@ -507,6 +522,21 @@ Quellcode der Skills: https://github.com/LLM-Coding/vibe-coding-risk-radar/tree/
       { name: "Payment Service", values: { codeType: 4, language: 1, deployment: 2, data: 4, blastRadius: 3 } },
       { name: "Auth Module (Fintech)", values: { codeType: 4, language: 2, deployment: 2, data: 3, blastRadius: 3 } },
       { name: "Medical Device FW", values: { codeType: 4, language: 4, deployment: 4, data: 4, blastRadius: 4 } },
+      {
+        name: "Support Chatbot",
+        values: { codeType: 2, language: 2, deployment: 2, data: 2, blastRadius: 1 },
+        llmRuntimeLevel: 2,
+      },
+      {
+        name: "RAG Knowledge Assistant",
+        values: { codeType: 2, language: 2, deployment: 2, data: 2, blastRadius: 2 },
+        llmRuntimeLevel: 3,
+      },
+      {
+        name: "Coding Agent",
+        values: { codeType: 3, language: 2, deployment: 2, data: 1, blastRadius: 3 },
+        llmRuntimeLevel: 4,
+      },
     ],
     mitigations: [
       {
