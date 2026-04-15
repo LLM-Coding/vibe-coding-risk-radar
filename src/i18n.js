@@ -355,6 +355,25 @@ Dieses Framework bietet eine https://github.com/LLM-Coding/Semantic-Anchors?tab=
 *Organisatorisch* (orange) — Braucht Menschen, skaliert am schlechtesten. Deshalb erst ab Tier 2/3 eingeplant, und dort gezielt auf die riskantesten Änderungen fokussiert.`,
         },
         {
+          id: "llmRuntime",
+          title: "LLM Runtime Integration",
+          content: `Der Risk Radar bewertet primär den *geschriebenen Code*. Viele moderne Systeme nutzen LLMs aber auch *zur Laufzeit* — von einfacher Klassifikation bis zu agentic Systemen, die Code autonom ausführen. Diese Runtime-Nutzung bringt qualitativ andere Risiken mit sich als LLM-generierter Code und wird über den cross-cutting Modifier *LLM Runtime Integration* abgebildet.
+
+*Build-Time vs. Runtime* — LLM-Code ist ein Build-Time-Problem (Mitigation durch Linter, Review, SAST). LLM-Runtime ist ein Operational-Problem (Mitigation durch Sandboxing, Tool-Whitelists, Output-Filter, Prompt-Injection-Detection). Beide müssen gemeinsam betrachtet werden.
+
+*Die Eskalationsleiter:*
+
+* *L0 — Kein LLM:* Klassische Software ohne LLM zur Laufzeit.
+* *L1 — Klassifikation:* Passive Nutzung (Sentiment-Analyse, Intent-Erkennung, Embeddings). Risiken: Fehlklassifikation, Bias.
+* *L2 — Generativ:* Generative Ausgabe (Chat, Zusammenfassungen). Risiken: Halluzination, Prompt Injection auf Content.
+* *L3 — Tool Use:* Function Calling, LLM triggert Aktionen. Risiken: Prompt Injection → unautorisierte Aktionen, Jailbreaks.
+* *L4 — Agentic:* Autonome Loops, Code-Execution, Selbstmodifikation. Risiken: Prompt Injection → RCE, Daten-Exfiltration, Kostenlawinen, unkontrollierte Seiteneffekte.
+
+*Tier-Kopplung (harter Multiplier):* L3 erzwingt mindestens Tier 3, L4 mindestens Tier 4 — unabhängig von den fünf Code-Dimensionen. Ein Coding-Agent, der \`rm -rf\` ausführen könnte, ist per Definition safety-critical, selbst wenn der Blast Radius oberflächlich klein wirkt.
+
+*Ab L3 gilt: unser Mitigations-Katalog reicht nicht.* Die hier gelisteten Maßnahmen decken Build-Time-Risiken ab. Für Prompt Injection, Tool Sandboxing, Agentic Guardrails und Runtime-Monitoring verweisen wir auf spezialisierte Frameworks: https://owasp.org/www-project-top-10-for-large-language-model-applications/[OWASP LLM Top 10], https://unit42.paloaltonetworks.com/securing-vibe-coding-tools/[Palo Alto SHIELD], https://www.aikido.dev/blog/vibe-coding-security[Aikido VCAL], https://saif.google/secure-ai-framework[Google SAIF]. Diese Tools sind in ihrer Domäne reifer — der Radar ordnet nur ein und verweist weiter.`,
+        },
+        {
           id: "references",
           title: "Referenzen & Standards",
           content: `*Safety Standards:* https://www.perforce.com/blog/qac/what-iec-61508-safety-integrity-levels-sils[IEC 61508] (SIL), https://en.wikipedia.org/wiki/DO-178C[DO-178C] (DAL), https://en.wikipedia.org/wiki/ISO_26262[ISO 26262] (ASIL), https://www.euaiact.com/key-issue/3[EU AI Act]
@@ -754,6 +773,25 @@ This framework provides a https://github.com/LLM-Coding/Semantic-Anchors?tab=rea
 *Probabilistic* (purple) — Finds many issues but not all. AI code review, property-based testing, fuzzing. Increases detection rate but offers no guarantee.
 
 *Organizational* (orange) — Requires humans, scales worst. Therefore only introduced from Tier 2/3 onward, focused on the riskiest changes.`,
+        },
+        {
+          id: "llmRuntime",
+          title: "LLM Runtime Integration",
+          content: `The Risk Radar primarily assesses the *code being written*. However, many modern systems also use LLMs *at runtime* — from simple classification to agentic systems that execute code autonomously. This runtime use carries qualitatively different risks than LLM-generated code, captured by the cross-cutting *LLM Runtime Integration* modifier.
+
+*Build-time vs. runtime* — LLM code is a build-time problem (mitigation via linters, review, SAST). LLM runtime is an operational problem (mitigation via sandboxing, tool whitelists, output filters, prompt injection detection). Both must be considered together.
+
+*The escalation ladder:*
+
+* *L0 — No LLM:* Classical software, no LLM at runtime.
+* *L1 — Classify:* Passive use (sentiment analysis, intent detection, embeddings). Risks: misclassification, bias.
+* *L2 — Generate:* Generative output (chat, summaries). Risks: hallucination, prompt injection on content.
+* *L3 — Tool Use:* Function calling, LLM triggers actions. Risks: prompt injection → unauthorized actions, jailbreaks.
+* *L4 — Agentic:* Autonomous loops, code execution, self-modification. Risks: prompt injection → RCE, data exfiltration, runaway costs, uncontrolled side effects.
+
+*Tier coupling (hard multiplier):* L3 forces at least Tier 3, L4 forces at least Tier 4 — independent of the five code dimensions. A coding agent that could run \`rm -rf\` is by definition safety-critical, even if the surface-level blast radius seems small.
+
+*From L3 onward, our mitigation catalog is insufficient.* The measures listed here cover build-time risks. For prompt injection, tool sandboxing, agentic guardrails, and runtime monitoring, we defer to specialized frameworks: https://owasp.org/www-project-top-10-for-large-language-model-applications/[OWASP LLM Top 10], https://unit42.paloaltonetworks.com/securing-vibe-coding-tools/[Palo Alto SHIELD], https://www.aikido.dev/blog/vibe-coding-security[Aikido VCAL], https://saif.google/secure-ai-framework[Google SAIF]. These tools are more mature in their domain — the radar only classifies and points further.`,
         },
         {
           id: "references",
