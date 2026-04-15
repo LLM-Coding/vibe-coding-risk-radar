@@ -15,3 +15,6 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# Lighthouse CI local results
+.lighthouseci/
