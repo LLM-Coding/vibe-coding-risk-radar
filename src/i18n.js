@@ -19,6 +19,28 @@ const T = {
     docsButton: "Dokumentation",
     closeButton: "Schließen",
     langSwitch: "EN",
+    llmRuntime: {
+      label: "LLM Runtime Integration",
+      levels: [
+        { short: "Kein LLM", desc: "Klassische Software ohne LLM zur Laufzeit" },
+        { short: "Klassifikation", desc: "Passive Nutzung: Sentiment, Intent, Embeddings" },
+        { short: "Generativ", desc: "Generative Ausgabe: Chat, Zusammenfassungen" },
+        { short: "Tool Use", desc: "Function Calling: LLM triggert Aktionen" },
+        { short: "Agentic", desc: "Autonome Loops, Code-Execution, Selbstmodifikation" },
+      ],
+      calloutTitle: "Runtime-Risiken außerhalb unseres Katalogs.",
+      calloutBody:
+        "Die Mitigationen hier decken Build-Time-Risiken ab. Für Prompt Injection, Tool Sandboxing und Agentic Guardrails siehe spezialisierte Frameworks:",
+      frameworks: [
+        {
+          name: "OWASP LLM Top 10",
+          url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+        },
+        { name: "Palo Alto SHIELD", url: "https://unit42.paloaltonetworks.com/securing-vibe-coding-tools/" },
+        { name: "Aikido VCAL", url: "https://www.aikido.dev/blog/vibe-coding-security" },
+        { name: "Google SAIF", url: "https://saif.google/secure-ai-framework" },
+      ],
+    },
     typeBadges: {
       deterministic: "Deterministisch",
       probabilistic: "Probabilistisch",
@@ -383,6 +405,28 @@ Quellcode der Skills: https://github.com/LLM-Coding/vibe-coding-risk-radar/tree/
     docsButton: "Documentation",
     closeButton: "Close",
     langSwitch: "DE",
+    llmRuntime: {
+      label: "LLM Runtime Integration",
+      levels: [
+        { short: "No LLM", desc: "Classical software, no LLM at runtime" },
+        { short: "Classify", desc: "Passive use: sentiment, intent, embeddings" },
+        { short: "Generate", desc: "Generative output: chat, summaries" },
+        { short: "Tool Use", desc: "Function calling: LLM triggers actions" },
+        { short: "Agentic", desc: "Autonomous loops, code execution, self-modification" },
+      ],
+      calloutTitle: "Runtime risks are outside our catalog.",
+      calloutBody:
+        "The mitigations here cover build-time risks. For prompt injection, tool sandboxing, and agentic guardrails, see specialized frameworks:",
+      frameworks: [
+        {
+          name: "OWASP LLM Top 10",
+          url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+        },
+        { name: "Palo Alto SHIELD", url: "https://unit42.paloaltonetworks.com/securing-vibe-coding-tools/" },
+        { name: "Aikido VCAL", url: "https://www.aikido.dev/blog/vibe-coding-security" },
+        { name: "Google SAIF", url: "https://saif.google/secure-ai-framework" },
+      ],
+    },
     typeBadges: {
       deterministic: "Deterministic",
       probabilistic: "Probabilistic",

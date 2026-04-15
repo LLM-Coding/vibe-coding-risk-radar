@@ -118,6 +118,7 @@ export default function RadarChart({
   size = 460,
   determiningKey = null,
   registerUpdater = null,
+  llmRuntimeLevel = 0,
 }) {
   // Safe fallbacks to prevent math from crashing if data is missing
   const safeDims = dimensions || [];
@@ -130,7 +131,12 @@ export default function RadarChart({
   const n = safeDims.length || 1; // prevents division by zero
   const angStep = 360 / n;
 
-  const ti = getTierIndex(safeVals);
+  // Ref mirrors the prop so the rAF-driven registerUpdater closure
+  // can read the current level without re-binding the callback.
+  const llmRuntimeLevelRef = useRef(llmRuntimeLevel);
+  llmRuntimeLevelRef.current = llmRuntimeLevel;
+
+  const ti = getTierIndex(safeVals, llmRuntimeLevel);
   const tc = TIER_BG[ti] || "#6b7280";
 
   const [tooltip, setTooltip] = useState(null);
@@ -150,7 +156,7 @@ export default function RadarChart({
     registerUpdater((newValues) => {
       if (!mountedRef.current) return;
       const dims = dimensionsRef.current;
-      const newTi = getTierIndex(newValues);
+      const newTi = getTierIndex(newValues, llmRuntimeLevelRef.current);
       const newTc = TIER_BG[newTi] || "#6b7280";
       const newRiskPts = dims.map((d, i) =>
         polarToCartesian(cx, cy, (maxR / levels) * (newValues[d.key] + 1), i * angStep),
